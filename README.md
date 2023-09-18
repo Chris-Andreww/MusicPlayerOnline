@@ -1,24 +1,8 @@
-# netmusic
+# 网易云音乐项目
 
-## Project setup
+## 安装步骤
 ```
 pnpm install
 ```
 
-### Compiles and hot-reloads for development
-```
-pnpm run serve
-```
-
-### Compiles and minifies for production
-```
-pnpm run build
-```
-
-### Lints and fixes files
-```
-pnpm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 目前该项目已实现动态播放页面，可动态移出移入播放界面，手写翻译原文双歌词解析，能够实现不同样式的歌词文件进行解析。播放页面背景虚化，多类型搜索功能
