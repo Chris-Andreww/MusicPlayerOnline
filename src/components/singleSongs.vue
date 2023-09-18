@@ -31,16 +31,17 @@ const storePlayId = usePlayId()
 
 // 触底事件
 const onLoad = async () => {
-  page.value++
+  loading.value = true;
   const res = await getSongsData(props.value, props.type, page.value)
   if (res.data.result?.songs === undefined) { // 没有更多数据了
+    console.log(1);
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
     return;
   }
-  resultList.value = [...resultList, ...res.data.result.songs];
-  finished.value = true; // 全部加载完成(list不会在触发onload方法)
+  resultList.value = [...resultList.value, ...res.data.result.songs];
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
+  page.value++
 }
 const playFn = async (id) => {
   const checkRes = await getSongCheckAPI(id)
@@ -49,7 +50,7 @@ const playFn = async (id) => {
     elem.classList.add('fadein')
     setTimeout(() => {
       elem.classList.remove('fadein')
-    },2000)
+    }, 2000)
     return
   }
   storePlayId.id = id
@@ -64,7 +65,6 @@ watch(() => props.value, async () => {
   }
   resultList.value = res.data.result?.songs;
   loading.value = false;
-  finished.value = true;
 })
 </script>
 
