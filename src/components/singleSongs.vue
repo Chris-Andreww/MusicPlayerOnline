@@ -34,7 +34,6 @@ const onLoad = async () => {
   loading.value = true;
   const res = await getSongsData(props.value, props.type, page.value)
   if (res.data.result?.songs === undefined) { // 没有更多数据了
-    console.log(1);
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
     return;
@@ -57,7 +56,7 @@ const playFn = async (id) => {
 }
 
 watch(() => props.value, async () => {
-  page.value == 1
+  page.value = 1
   const res = await getSongsData(props.value, props.type, page.value)
   if (res.data.result?.songs === undefined) {
     resultList.value = [];
@@ -77,6 +76,7 @@ watch(() => props.value, async () => {
 .noSongToast {
   position: fixed;
   transform: translateX(-50%);
+  font-size: 20px;
   padding: 10px 20px;
   width: 50%;
   color: white;

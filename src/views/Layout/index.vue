@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="main" style="overflow: hidden;">
-      <van-nav-bar :title="activeTitle" fixed @click-left="showSlider">
+      <van-nav-bar :title="activeTitle" fixed @click-left="showSlider" style="z-index: 2;">
         <template #left>
-          <div class="iconfont icon-zhankai" :class="{active:isSlider}"></div>
+          <div class="iconfont icon-zhankai" :class="{ active: isSlider }"></div>
         </template>
       </van-nav-bar>
-      <slide-bar class="slidebar"></slide-bar>
+      <slide-bar class="slidebar" @showSlider="showSlider"></slide-bar>
       <!-- 二级路由-挂载点 -->
       <router-view v-slot="{ Component }">
         <keep-alive>
@@ -72,6 +72,7 @@ export default {
     font-size: 20px;
     transform: rotateZ(0deg);
     transition: transform 0.5s;
+
     &.active {
       transform: rotateZ(180deg);
     }

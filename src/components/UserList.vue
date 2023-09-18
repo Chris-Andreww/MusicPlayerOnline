@@ -1,8 +1,11 @@
 <template>
   <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-    <van-cell v-for="obj in resultList" center :title="obj.name" :label="obj.dj.nickname" :key="obj.id" @click="detail">
+    <van-cell v-for="obj in resultList" center :title="obj.nickname" :label="obj.signature.substr(0,20)+'...'" :key="obj.id"
+      @click="detail">
       <template #icon>
-        <img :src="obj.picUrl" style="width: 15%;padding-right: 10px;">
+        <div class="singerAvatar">
+          <img :src="obj.avatarUrl" style="width: 100%;padding-right: 10px">
+        </div>
       </template>
     </van-cell>
   </van-list>
@@ -32,12 +35,12 @@ const onLoad = async () => {
   }, 1000);
   loading.value = true;
   const res = await getSongsData(props.value, props.type, page.value)
-  if (res.data.result?.djRadios === undefined) { // 没有更多数据了
+  if (res.data.result?.userprofiles === undefined) { // 没有更多数据了
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
     return;
   }
-  resultList.value = [...resultList.value, ...res.data.result.djRadios];
+  resultList.value = [...resultList.value, ...res.data.result.userprofiles];
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
 }
@@ -49,11 +52,11 @@ const detail = () => {
 watch(() => props.value, async () => {
   page.value = 1
   const res = await getSongsData(props.value, props.type, page.value)
-  if (res.data.result?.djRadios === undefined) {
+  if (res.data.result?.userprofiles === undefined) {
     resultList.value = [];
     return;
   }
-  resultList.value = res.data.result?.djRadios;
+  resultList.value = res.data.result?.userprofiles;
   loading.value = false;
 })
 </script>
@@ -62,5 +65,12 @@ watch(() => props.value, async () => {
 /* 给单元格设置底部边框 */
 .van-cell {
   border-bottom: 1px solid lightgray;
+}
+.singerAvatar{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  overflow: hidden;
 }
 </style>

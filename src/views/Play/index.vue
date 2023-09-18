@@ -66,14 +66,17 @@ const getSong = async () => {
   keyArr.value = {}
   const lyrContent = await getLyricByIdAPI(id.value)
   if (lyrContent.data.tlyric?.lyric) { //如果歌词有翻译
-    const translyricStr = lyrContent.data.tlyric.lyric
-    const lyricStr = lyrContent.data.lrc.lyric
+    let translyricStr = lyrContent.data.tlyric.lyric
+    let lyricStr = lyrContent.data.lrc.lyric
     //解析带翻译的歌词
     lyric.value = trans_formatLyr(lyricStr, translyricStr, keyArr.value);
   } else {
-    const lyricStr = lyrContent.data.lrc.lyric
+    let lyricStr = lyrContent.data.lrc.lyric
     //解析不带翻译的歌词
     lyric.value = _formatLyr(lyricStr, keyArr.value)
+  }
+  if (!Object.keys(lyric.value).length) { //如果遍历的歌词对象中没有内容，则没有歌词
+    lyric.value[0] = '暂无歌词信息'
   }
 }
 
@@ -105,6 +108,7 @@ watch(() => playTime.value, () => {
 })
 
 watch(() => store.id, (newv) => {
+  playState.value = false  //如果用户在播放时切换音乐，就暂停封面旋转
   id.value = newv
   getSong()
   showLyric()

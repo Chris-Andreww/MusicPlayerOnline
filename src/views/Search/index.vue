@@ -22,13 +22,21 @@
         <van-tab title="单曲">
           <singleSongs :value="value" :type="1"></singleSongs>
         </van-tab>
-        <van-tab title="专辑">内容 2</van-tab>
+        <van-tab title="专辑">
+          <albumList :value="value" :type="10"></albumList>
+        </van-tab>
         <van-tab title="播客">
           <djRadio :value="value" :type="1009"></djRadio>
         </van-tab>
-        <van-tab title="歌手">内容 3</van-tab>
-        <van-tab title="歌单">内容 4</van-tab>
-        <van-tab title="用户">内容 4</van-tab>
+        <van-tab title="歌手">
+          <singerList :value="value" :type="100"></singerList>
+        </van-tab>
+        <van-tab title="歌单">
+          <PlaySheetList :value="value" :type="1000"></PlaySheetList>
+        </van-tab>
+        <van-tab title="用户">
+          <UserList :value="value" :type="1002"></UserList>
+        </van-tab>
       </van-tabs>
     </div>
   </div>
@@ -45,7 +53,7 @@ export default {
       pendingVal: '', //存放暂时输入的内容（显示搜索建议）
       hotArr: [],
       showSuggest: false,
-      timer: 0
+      timer: null
     };
   },
   async created () {

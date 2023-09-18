@@ -9,12 +9,14 @@
 <script setup>
 import Play from '@/views/Play'
 import { usePlayId } from '@/store/index'
-import { ref, watch } from 'vue'
+import { ref, watch, defineEmits } from 'vue'
 const active = ref(false)
 const store = usePlayId()
+const emit =defineEmits(['showSlider'])
 
 watch(() => store.id, (newv) => {
   if (newv != 0) {
+    emit('showSlider')
     active.value = true
   }
 })
@@ -24,7 +26,8 @@ watch(() => store.id, (newv) => {
   width: 100%;
   height: 100%;
   background-color: white;
-  .none{
+
+  .none {
     display: flex;
     justify-content: center;
     margin-top: 50%;

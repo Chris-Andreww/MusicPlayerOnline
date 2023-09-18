@@ -7,15 +7,15 @@
  * @returns 
  */
 export const trans_formatLyr = (lyricStr, translyricStr, keyArr) => {
-  let reg = /\[[0-9]{1,2}:[0-9]{1,2}\.[0-9]{1,2}\]/g
+  let reg = /\[[0-9]{1,}:[0-9]{1,}\.[0-9]{1,}\]/g
   let timeArr = lyricStr.match(reg)
   let timeArr2 = translyricStr.match(reg)
 
-
-  let contentArr = lyricStr.split(/\[[0-9]{1,2}:[0-9]{1,2}\.[0-9]{1,2}\]/).slice(1)
-  let contentArr2 = translyricStr.split(/\[[0-9]{1,2}:[0-9]{1,2}\.[0-9]{1,2}\]/).slice(1)
+  let contentArr = lyricStr.split(reg).slice(1)
+  let contentArr2 = translyricStr.split(reg).slice(1)
   let lyricObj = {}//用来临时存放遍历时间和歌词的原歌词
   let translyricObj = {}//用来临时存放遍历时间和歌词的翻译歌词
+  console.log(lyricStr);
 
   //遍历翻译歌词
   timeArr2?.forEach((item, index) => {
@@ -63,9 +63,9 @@ export const trans_formatLyr = (lyricStr, translyricStr, keyArr) => {
  * @returns 
  */
 export const _formatLyr = (lyricStr, keyArr) => {
-  let reg = /\[[0-9]{1,2}:[0-9]{1,2}\.[0-9]{1,2}\]/g
+  let reg = /\[[0-9]{1,}:[0-9]{1,}\.[0-9]{1,}\]/g
   let timeArr = lyricStr.match(reg)
-  let contentArr = lyricStr.split(/\[[0-9]{1,2}:[0-9]{1,2}\.[0-9]{1,2}\]/).slice(1)
+  let contentArr = lyricStr.split(reg).slice(1)
 
   let lyricObj = {}//用来临时存放遍历时间和歌词的原歌词
   timeArr?.forEach((item, index) => {
@@ -85,5 +85,4 @@ export const _formatLyr = (lyricStr, keyArr) => {
     i++
   }
   return lyricObj
-
 }
