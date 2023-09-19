@@ -4,6 +4,8 @@ import Home from '@/views/Home'
 import Search from '@/views/Search'
 import Play from '@/views/Play'
 import User from '@/views/User'
+import SearchList from '@/views/SearchList/index.vue'
+import Detail from '@/views/Detail'
 
 const routes = [
   {
@@ -27,7 +29,21 @@ const routes = [
         component: Search,
         meta: {
           title: "搜索"
-        }
+        },
+        children: [
+          {
+            path: 'searchlist',
+            component: SearchList
+          },
+          {
+            path: 'detail',
+            name: 'detail',
+            component: Detail,
+            meta: {
+              title: "详情页"
+            }
+          }
+        ]
       },
       {
         path: 'user',

@@ -25,10 +25,11 @@ watch(() => store.id, (newv) => {
 .side-main {
   width: 100%;
   height: 100%;
-  background-color: white;
+  background-color: rgba(137, 137, 137, 0.801);
 
   .none {
     display: flex;
+    color: white;
     justify-content: center;
     margin-top: 50%;
     font-size: 20px;

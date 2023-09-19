@@ -3,5 +3,7 @@ import { ref } from "vue";
 
 export const usePlayId = defineStore('playid', () => {
   const id = ref(0)
-  return { id }
+  const searchVal = ref('')
+  const albumId = ref('')
+  return { id, searchVal, albumId }
 })

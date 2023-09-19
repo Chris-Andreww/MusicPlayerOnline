@@ -17,33 +17,17 @@
       </div>
     </div>
     <!-- 搜索结果 -->
-    <div class="search_wrap" v-show="value">
-      <van-tabs>
-        <van-tab title="单曲">
-          <singleSongs :value="value" :type="1"></singleSongs>
-        </van-tab>
-        <van-tab title="专辑">
-          <albumList :value="value" :type="10"></albumList>
-        </van-tab>
-        <van-tab title="播客">
-          <djRadio :value="value" :type="1009"></djRadio>
-        </van-tab>
-        <van-tab title="歌手">
-          <singerList :value="value" :type="100"></singerList>
-        </van-tab>
-        <van-tab title="歌单">
-          <PlaySheetList :value="value" :type="1000"></PlaySheetList>
-        </van-tab>
-        <van-tab title="用户">
-          <UserList :value="value" :type="1002"></UserList>
-        </van-tab>
-      </van-tabs>
-    </div>
+    <router-view v-slot="{ Component }" v-show="value">
+      <keep-alive>
+        <component :is="Component"></component>
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 <script>
 import { hotSearchAPI } from "@/api";
 import { getSearchSuggest } from '@/utils/getData'
+import { usePlayId } from '@/store'
 
 export default {
   data () {
@@ -53,7 +37,8 @@ export default {
       pendingVal: '', //存放暂时输入的内容（显示搜索建议）
       hotArr: [],
       showSuggest: false,
-      timer: null
+      timer: null,
+      store: usePlayId()
     };
   },
   async created () {
@@ -78,11 +63,27 @@ export default {
       this.pendingVal = val
       this.showSuggest = false
       this.value = val; // 选中的关键词显示到搜索框
+      this.$router.push({
+        path: '/layout/search/searchlist'
+      })
+      setTimeout(()=>{
+        this.store.searchVal = this.value
+      },100)
+
     },
     //用户回车确认搜索时
     search () {
       this.showSuggest = false
       this.value = this.pendingVal
+      if (!this.value) {  //如果用户没有输入就回车
+        return
+      }
+      this.$router.push({
+        path: 'searchlist'
+      })
+      setTimeout(()=>{
+        this.store.searchVal = this.value
+      },100)
     }
   }
 }
@@ -90,9 +91,6 @@ export default {
 
 <style lang="scss" scoped>
 /* 搜索容器的样式 */
-.search_wrap {
-  padding: 0.266667rem;
-}
 
 .search_suggest {
   position: absolute;

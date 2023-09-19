@@ -3,16 +3,19 @@
     <div class="main" style="overflow: hidden;">
       <van-nav-bar :title="activeTitle" fixed @click-left="showSlider" style="z-index: 2;">
         <template #left>
-          <div class="iconfont icon-zhankai" :class="{ active: isSlider }"></div>
+          <div class="navback iconfont icon-zhankai"></div>
         </template>
       </van-nav-bar>
-      <slide-bar class="slidebar" @showSlider="showSlider"></slide-bar>
+      <slide-bar class="slidebar"></slide-bar>
       <!-- 二级路由-挂载点 -->
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component"></component>
         </keep-alive>
       </router-view>
+      <div class="playBottom" @click="showSlider">
+        <div class="playrotate iconfont icon-bofang" :class="{ active: isSlider }"></div>
+      </div>
     </div>
     <van-tabbar route>
       <van-tabbar-item replace to="/layout/home" icon="home-o">首页</van-tabbar-item>
@@ -22,43 +25,54 @@
   </div>
 </template>
 
-<script>
-import SlideBar from '@/views/SlideBar'
-export default {
-  data () {
-    return {
-      activeTitle: this.$route.meta.title, // "默认"顶部导航要显示的标题 (默认获取当前路由对象里的meta中title值)
-      isSlider: false
-    };
-  },
-  methods: {
-    showSlider () {
-      let doc = document.querySelector('.slidebar')
-      let root = document.documentElement;
+<script setup>
+import { ref, watch, onMounted } from 'vue';
+import SlideBar from '@/views/SlideBar';
+import { useRoute } from 'vue-router';
+import { usePlayId } from '@/store'
 
-      if (this.isSlider) {
-        //关闭侧边栏
-        doc.style.left = -doc.offsetWidth + 'px'
-        root.style.overflow = '';
-        this.isSlider = false
-      } else {
-        //打开侧边栏
-        doc.style.left = '0px'
-        root.style.overflow = 'hidden';
-        this.isSlider = true
-      }
-    }
-  },
-  // 路由切换 - 侦听$route对象改变
-  watch: {
-    $route () {
-      this.activeTitle = this.$route.meta.title; // 提取切换后路由信息对象里的title显示
-    },
-  },
-  components: {
-    SlideBar
+const activeTitle = ref('');
+const isSlider = ref(false);
+const route = useRoute()
+const store = usePlayId()
+
+const showSlider = () => {
+  let doc = document.querySelector('.slidebar')
+  let root = document.documentElement;
+
+  if (isSlider.value) {
+    //关闭侧边栏
+    doc.style.left = -doc.offsetWidth + 'px'
+    root.style.overflow = '';
+    isSlider.value = false
+  } else {
+    //打开侧边栏
+    doc.style.left = '0px'
+    root.style.overflow = 'hidden';
+    isSlider.value = true
   }
-};
+}
+
+watch(() => store.isPlay, (newv) => {
+  let elem = document.querySelector('.playrotate')
+  if (newv) {
+    elem.classList.remove('icon-bofang')
+    elem.classList.add('icon-zanting')
+  } else {
+    elem.classList.remove('icon-zanting')
+    elem.classList.add('icon-bofang')
+  }
+})
+watch(route, () => {
+  activeTitle.value = route.meta.title;
+});
+watch(() => store.id, () => {
+  showSlider()
+})
+
+onMounted(() => {
+  activeTitle.value = route.meta.title;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -68,14 +82,35 @@ export default {
   padding-bottom: 50px;
   overflow: hidden;
 
-  .iconfont {
-    font-size: 20px;
-    transform: rotateZ(0deg);
-    transition: transform 0.5s;
+  .playBottom {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 50%;
+    right: 5%;
+    border-radius: 50%;
+    background-color: rgb(0, 0, 0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
 
-    &.active {
-      transform: rotateZ(180deg);
+    .playrotate {
+      font-size: 30px;
+      padding-left: 5px;
+      color: white;
+      transform: rotateZ(0deg);
+      transition: transform 0.5s;
+
+      &.active {
+        transform: rotateZ(180deg);
+      }
     }
+  }
+
+  .navback {
+    font-size: 20px;
+    transform: rotateZ(180deg);
   }
 
   .slidebar {

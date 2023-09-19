@@ -132,6 +132,7 @@ audio {
 }
 
 .header {
+  position: relative;
   height: 50px;
   display: flex;
   justify-content: center;
@@ -164,21 +165,21 @@ audio {
   height: 100%;
   z-index: 2;
   overflow: hidden;
-}
 
-.song-bg {
-  background-color: #161824;
-  background-position: 50%;
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  transform-origin: center;
-  position: absolute;
-  transform: scale(1.5);
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  opacity: 1;
-  filter: blur(20px);
+  .song-bg {
+    background-color: #161824;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    transform-origin: center;
+    position: absolute;
+    transform: scale(1.5);
+    height: 80%;
+    width: 100%;
+    z-index: 1;
+    opacity: 1;
+    filter: blur(20px);
+  }
 }
 
 .song-bg::before {
@@ -255,9 +256,10 @@ audio {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 50px;
+  margin-top: 70px;
+  margin-bottom: 30px;
   width: 100%;
-  height: 300px;
+  height: 25%;
   overflow: auto;
   z-index: 10;
 }
