@@ -1,4 +1,4 @@
-import { searchResultAPI, searchSuggestAPI } from "@/api";
+import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI } from "@/api";
 
 /**
  * 
@@ -26,4 +26,18 @@ export const getSearchSuggest = async (value) => {
     keywords: value,
     type: 'mobile'
   });
+}
+
+/**
+ * 
+ * @param id 歌单ID 
+ * @param page 歌单翻页
+ * @returns 
+ */
+export const getPlayListTrack = async (id, page) => {
+  return await getPlayListTrackAPI({
+    id,
+    limit: 20,
+    offset: (page - 1) * 20
+  }); // 把搜索结果return出去
 }

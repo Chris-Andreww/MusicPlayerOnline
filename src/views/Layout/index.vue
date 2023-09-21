@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="main" style="overflow: hidden;">
-      <van-nav-bar :title="activeTitle" fixed @click-left="showSlider" style="z-index: 2;">
+      <van-nav-bar :title="activeTitle" fixed style="z-index: 2;">
         <template #left>
-          <div class="navback iconfont icon-zhankai"></div>
+          <div v-show="showNavBack" @click="closePage" class="navback iconfont icon-zhankai"></div>
         </template>
       </van-nav-bar>
       <slide-bar class="slidebar"></slide-bar>
@@ -28,13 +28,15 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import SlideBar from '@/views/SlideBar';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { usePlayId } from '@/store'
 
 const activeTitle = ref('');
 const isSlider = ref(false);
 const route = useRoute()
+const router = useRouter()
 const store = usePlayId()
+const showNavBack = ref(false)
 
 const showSlider = () => {
   let doc = document.querySelector('.slidebar')
@@ -53,6 +55,10 @@ const showSlider = () => {
   }
 }
 
+const closePage = () => {
+  router.back()
+}
+
 watch(() => store.isPlay, (newv) => {
   let elem = document.querySelector('.playrotate')
   if (newv) {
@@ -63,7 +69,13 @@ watch(() => store.isPlay, (newv) => {
     elem.classList.add('icon-bofang')
   }
 })
-watch(route, () => {
+watch(route, (to) => {
+  if (to.fullPath == '/layout/search' || to.fullPath == '/layout/home' || to.fullPath == '/layout/user') {
+    showNavBack.value = false
+    store.searchVal = ''
+  } else {
+    showNavBack.value = true
+  }
   activeTitle.value = route.meta.title;
 });
 watch(() => store.id, () => {
@@ -89,7 +101,7 @@ onMounted(() => {
     bottom: 50%;
     right: 5%;
     border-radius: 50%;
-    background-color: rgb(0, 0, 0,0.5);
+    background-color: rgb(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;

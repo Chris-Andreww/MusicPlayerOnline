@@ -4,8 +4,9 @@ import Home from '@/views/Home'
 import Search from '@/views/Search'
 import Play from '@/views/Play'
 import User from '@/views/User'
+import Login from '@/views/Login'
 import SearchList from '@/views/SearchList/index.vue'
-import Detail from '@/views/Detail'
+import { albumDetail, PlayListDetail } from '@/views/Detail'
 
 const routes = [
   {
@@ -36,11 +37,19 @@ const routes = [
             component: SearchList
           },
           {
-            path: 'detail',
-            name: 'detail',
-            component: Detail,
+            path: 'albumDetail',
+            name: 'albumDetail',
+            component: albumDetail,
             meta: {
-              title: "详情页"
+              title: "专辑详情"
+            }
+          },
+          {
+            path: 'PlayListDetail',
+            name: 'PlayListDetail',
+            component: PlayListDetail,
+            meta: {
+              title: "歌单详情"
             }
           }
         ]
@@ -49,9 +58,23 @@ const routes = [
         path: 'user',
         component: User,
         meta: {
-          title: "用户"
+          title: "个人中心"
         }
       },
+      {
+        path: 'login',
+        component: Login,
+        meta: {
+          title: "登录页"
+        }
+      },
+      {
+        path: 'PlayListDetail',
+        component: PlayListDetail,
+        meta: {
+          title: "歌单详情"
+        }
+      }
     ]
   },
   {

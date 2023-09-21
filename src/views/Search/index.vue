@@ -66,9 +66,9 @@ export default {
       this.$router.push({
         path: '/layout/search/searchlist'
       })
-      setTimeout(()=>{
+      setTimeout(() => {
         this.store.searchVal = this.value
-      },100)
+      }, 100)
 
     },
     //用户回车确认搜索时
@@ -79,11 +79,11 @@ export default {
         return
       }
       this.$router.push({
-        path: 'searchlist'
+        path: '/layout/search/searchlist'
       })
-      setTimeout(()=>{
+      setTimeout(() => {
         this.store.searchVal = this.value
-      },100)
+      }, 100)
     }
   }
 }
