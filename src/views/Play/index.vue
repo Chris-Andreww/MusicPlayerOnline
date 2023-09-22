@@ -34,8 +34,13 @@
         <li v-html="val"></li>
       </ul>
     </div>
-    <audio controls @ended="playState = false" ref="audio" preload="true"
+    <audio controls @ended="playState = false" ref="audio" preload="true" loop
       :src="`https://music.163.com/song/media/outer/url?id=${id}.mp3`"></audio>
+    <div class="controller">
+      <div class="before iconfont icon-xiangzuoshouqi" @click="changeSongs(1)"></div>
+      <div class="middle iconfont icon-bofang" @click="audioStart"></div>
+      <div class="after iconfont icon-xiangyouzhankai" @click="changeSongs(2)"></div>
+    </div>
   </div>
 </template>
 
@@ -53,10 +58,16 @@ const playTime = ref(0) //记录当前播放的时间
 const keyArr = ref({}) //负责存储所有的key值，用来判断当前歌词的显示时间
 const store = usePlayId()
 const refs = getCurrentInstance()
+const curPlayList = ref([]) //存放当前歌单中显示的歌曲
 
 const needleDeg = computed(() => {
   return playState.value ? '-7deg' : '-38deg'
 })
+
+//用于切换歌曲，1为上一首，2为下一首
+const changeSongs = (o) => {
+  console.log(o);
+}
 
 const getSong = async () => {
   const res = await getSongByIdAPI(id.value)
@@ -81,11 +92,16 @@ const getSong = async () => {
 }
 
 const audioStart = () => {
+  let doc = document.querySelector('.controller .middle')
   if (!playState.value) {
     //refs.ctx.$refs用来代替vue2中的this.$refs
     refs.ctx.$refs.audio.play()
+    doc.classList.remove('icon-bofang')
+    doc.classList.add("icon-zanting");
   } else {
     refs.ctx.$refs.audio.pause()
+    doc.classList.add('icon-bofang')
+    doc.classList.remove("icon-zanting");
   }
   playState.value = !playState.value
 }
@@ -98,6 +114,7 @@ const showLyric = () => {
 
 onMounted(() => {
   id.value = store.id
+  curPlayList.value = store.curPlayList
   getSong()
   showLyric()
 })
@@ -167,7 +184,6 @@ audio {
   overflow: hidden;
 
   .song-bg {
-    background-color: #161824;
     background-position: 50%;
     background-repeat: no-repeat;
     background-size: auto 100%;
@@ -185,7 +201,7 @@ audio {
 .song-bg::before {
   /*纯白色的图片做背景, 歌词白色看不到了, 在背景前加入一个黑色半透明蒙层解决 */
   content: " ";
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
   position: absolute;
   left: 0;
   top: 0;
@@ -274,7 +290,7 @@ audio {
 }
 
 .lrc.active {
-  font-size: 20px;
+  font-size: 22px;
   color: #fff;
   text-align: center;
 }
@@ -290,6 +306,29 @@ audio {
 
   100% {
     -webkit-transform: rotate(360deg);
+  }
+}
+
+.controller {
+  width: 100%;
+  padding: 60px 50px 0px;
+  box-sizing: border-box;
+  position: absolute;
+  display: flex;
+  justify-content: space-around;
+  z-index: 5;
+  color: rgba(186, 186, 186, 0.826);
+
+  .before {
+    font-size: 30px;
+  }
+
+  .middle {
+    font-size: 30px;
+  }
+
+  .after {
+    font-size: 30px;
   }
 }
 </style>

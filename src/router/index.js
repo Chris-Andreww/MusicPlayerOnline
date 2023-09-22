@@ -6,7 +6,7 @@ import Play from '@/views/Play'
 import User from '@/views/User'
 import Login from '@/views/Login'
 import SearchList from '@/views/SearchList/index.vue'
-import { albumDetail, PlayListDetail } from '@/views/Detail'
+import { albumDetail, PlayListDetail, djRadioDetail } from '@/views/Detail'
 
 const routes = [
   {
@@ -50,6 +50,13 @@ const routes = [
             component: PlayListDetail,
             meta: {
               title: "歌单详情"
+            }
+          },
+          {
+            path: 'djRadioDetail',
+            component: djRadioDetail,
+            meta: {
+              title: "播客详情"
             }
           }
         ]

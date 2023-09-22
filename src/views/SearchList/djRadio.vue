@@ -1,6 +1,7 @@
 <template>
   <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-    <van-cell v-for="obj in resultList" center :title="obj.name" :label="obj.dj.nickname" :key="obj.id" @click="detail">
+    <van-cell v-for="(obj, index) in resultList" center :title="obj.name" :label="obj.dj.nickname" :key="index"
+      @click="toDetail(obj.id)">
       <template #icon>
         <img :src="obj.picUrl" style="width: 15%;padding-right: 10px;">
       </template>
@@ -11,6 +12,8 @@
 <script setup>
 import { getSongsData } from "@/utils/getData";
 import { defineProps, ref, watch } from "vue";
+import { useRouter } from 'vue-router';
+import { usePlayId } from "@/store";
 
 const props = defineProps({
   value: String,
@@ -21,6 +24,8 @@ const loading = ref(false) // 加载中 (状态) - 只有为false, 才能触底�
 const finished = ref(false) // 未加载全部 (如果设置为true, 底部就不会再次执行onload, 代表全部加载完成)
 const page = ref(1) // 当前搜索结果的页码
 const timer = ref(null)
+const router = useRouter()
+const store = usePlayId()
 
 // 触底事件
 const onLoad = async () => {
@@ -42,8 +47,11 @@ const onLoad = async () => {
   page.value++
 }
 
-const detail = () => {
-  console.log(1);
+const toDetail = (id) => {
+  store.djRadioId = id
+  router.push({
+    path: 'djRadioDetail'
+  })
 }
 
 watch(() => props.value, async () => {

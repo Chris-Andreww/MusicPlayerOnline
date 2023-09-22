@@ -30,7 +30,7 @@ const router = useRouter()
 const store = usePlayId()
 
 const toDetail = (id) => {
-  store.detailId = id
+  store.albumId = id
   router.push({
     path: 'albumDetail'
   })

@@ -1,6 +1,6 @@
 <template>
   <div class="search_wrap">
-    <van-tabs>
+    <van-tabs v-model:active="active">
       <van-tab title="单曲">
         <singleSongs :value="inputValue" :type="1"></singleSongs>
       </van-tab>
@@ -29,6 +29,12 @@ import { albumList, djRadio, PlaySheetList, singerList, singleSongs, UserList } 
 const store = usePlayId()
 
 const inputValue = ref('')
+const active = ref(0)
+
+watch(active, (to) => {
+  store.activeTab = to
+})
+
 watch(() => store.searchVal, (newv) => {
   inputValue.value = newv
 })

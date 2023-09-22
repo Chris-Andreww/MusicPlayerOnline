@@ -54,7 +54,7 @@ const onLoad = async () => {
 }
 
 const toDetail = (id) => {
-  store.detailId = id
+  store.playListId = id
   router.push({
     path: 'PlayListDetail'
   })

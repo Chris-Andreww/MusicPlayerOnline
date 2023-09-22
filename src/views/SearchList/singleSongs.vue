@@ -1,5 +1,5 @@
 <template>
-  <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+  <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false" @load="onLoad">
     <van-cell v-for="obj in resultList" center :title="obj.name" :label="obj.ar[0].name" :key="obj.id"
       @click="playFn(obj.id)">
       <template #icon>
@@ -13,7 +13,7 @@
 
 <script setup>
 import { getSongsData } from "@/utils/getData";
-import { defineProps, ref, watch } from "vue";
+import { defineProps, ref, watch, onMounted } from "vue";
 import { usePlayId } from '@/store'
 import { getSongCheckAPI } from '@/api'
 
@@ -56,14 +56,14 @@ const playFn = async (id) => {
 }
 
 watch(() => props.value, async () => {
+  resultList.value=[]
   page.value = 1
-  const res = await getSongsData(props.value, props.type, page.value)
-  if (res.data.result?.songs === undefined) {
-    resultList.value = [];
-    return;
-  }
-  resultList.value = res.data.result?.songs;
-  loading.value = false;
+  onLoad()
+})
+
+onMounted(() => {
+  page.value = 1
+  onLoad()
 })
 </script>
 

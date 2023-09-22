@@ -71,7 +71,7 @@ const store = usePlayId()
 const router = useRouter()
 
 const toDetail = (id) => {
-  store.detailId = id
+  store.playListId = id
   router.push({
     path: '/layout/PlayListDetail'
   })

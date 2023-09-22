@@ -98,7 +98,7 @@ onMounted(() => {
     position: fixed;
     width: 60px;
     height: 60px;
-    bottom: 50%;
+    top: 35%;
     right: 5%;
     border-radius: 50%;
     background-color: rgb(0, 0, 0, 0.5);
@@ -131,6 +131,7 @@ onMounted(() => {
     height: 100%;
     position: fixed;
     left: -100%;
+    top: 0px;
     z-index: 30;
     transition: left 0.8s;
   }

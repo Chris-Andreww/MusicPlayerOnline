@@ -12,7 +12,8 @@
       </div>
     </div>
     <div class="songsList">
-      <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+      <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad"
+        :immediate-check="false">
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.ar[0].name" :key="obj.id"
           @click="playFn(obj.id)" :value="index + 1">
           <template #icon>
@@ -44,6 +45,7 @@ const playId = ref('')
 const getData = async () => {
   let res = await getPlayListDetailAPI(playId.value)
   playlist.value = res.data.playlist
+  onLoad()
 }
 
 // 触底事件，获取歌单所有歌曲
@@ -57,6 +59,7 @@ const onLoad = async () => {
     return;
   }
   songsInfo.value = [...songsInfo.value, ...res.data.songs];
+  store.curPlayList = songsInfo.value
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
 }
@@ -74,14 +77,16 @@ const playFn = async (id) => {
   store.id = id
 }
 
-watch(() => store.detailId, () => {
+watch(() => store.playListId, () => {
+  playlist.value = {}
+  songsInfo.value = []
   page.value = 1
-  playId.value = store.detailId
+  playId.value = store.playListId
   getData()
 })
 
 onMounted(() => {
-  playId.value = store.detailId
+  playId.value = store.playListId
   getData()
 })
 

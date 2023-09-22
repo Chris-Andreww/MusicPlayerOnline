@@ -1,4 +1,5 @@
-import albumDetail from '@/views/Detail/albumDetail'
-import PlayListDetail from '@/views/Detail/PlayListDetail'
+import albumDetail from './albumDetail'
+import PlayListDetail from './PlayListDetail'
+import djRadioDetail from './djRadioDetail'
 
-export { albumDetail, PlayListDetail }
+export { albumDetail, PlayListDetail, djRadioDetail }

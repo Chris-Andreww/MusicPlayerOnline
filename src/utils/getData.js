@@ -1,4 +1,4 @@
-import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI } from "@/api";
+import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI,getdjRadioTrackAPI } from "@/api";
 
 /**
  * 
@@ -40,4 +40,18 @@ export const getPlayListTrack = async (id, page) => {
     limit: 20,
     offset: (page - 1) * 20
   }); // 把搜索结果return出去
+}
+
+/**
+ * 
+ * @param id 播客ID 
+ * @param page 播客翻页
+ * @returns 
+ */
+export const getdjRadioTrack = async (rid, page) => {
+  return await getdjRadioTrackAPI({
+    rid,
+    limit: 20,
+    offset: (page - 1) * 20
+  });
 }

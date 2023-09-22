@@ -27,10 +27,9 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAlbumByIdAPI } from '@/api'
+import { getAlbumByIdAPI,getSongCheckAPI } from '@/api'
 import { formatDate } from '@/utils/formatTime'
 import { usePlayId } from "@/store"
-import { getSongCheckAPI } from '@/api'
 
 const store = usePlayId()
 
@@ -57,13 +56,13 @@ const playFn = async (id) => {
   store.id = id
 }
 
-watch(() => store.detailId, (id) => {
+watch(() => store.albumId, (id) => {
   albumId.value = id
   getData()
 })
 
 onMounted(() => {
-  albumId.value = store.detailId
+  albumId.value = store.albumId
   getData()
 })
 
