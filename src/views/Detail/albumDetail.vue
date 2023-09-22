@@ -21,7 +21,7 @@
         </van-cell>
       </van-list>
       <!-- 无版权或vip歌曲显示 -->
-      <div class="noSongToast">当前歌曲为会员歌曲或无版权歌曲，暂时无法播放~~</div>
+      <div class="noSongToast">当前歌曲为会员歌曲，只能试听30秒~~</div>
     </div>
   </div>
 </template>
@@ -41,6 +41,10 @@ const getData = async () => {
   let res = await getAlbumByIdAPI(albumId.value)
   albumInfo.value = res.data.album
   songsInfo.value = res.data.songs
+  //用于歌曲切换而创建的列表
+  store.curPlayList = songsInfo.value.map(val => {
+    return val.id
+  })
 }
 
 const playFn = async (id) => {
@@ -51,7 +55,6 @@ const playFn = async (id) => {
     setTimeout(() => {
       elem.classList.remove('fadein')
     }, 2000)
-    return
   }
   store.id = id
 }

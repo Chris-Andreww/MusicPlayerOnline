@@ -1,7 +1,7 @@
 // api文件夹下 各个请求模块js, 都统一来到index.js再向外导出
 import { recommendMusic, newMusic } from './Home'
 import { hotSearch, searchSuggest, searchResult } from './Search'
-import { getSongById, getLyricById, getSongCheck } from './Play'
+import { getSongById, getLyricById, getSongCheck, getSongUrl } from './Play'
 import { getAlbumById, getPlayListTrack, getPlayListDetail, getdjRadioDetail, getdjRadioTrack } from './Detail'
 import { getUserStatus, UserLogin, getUserDetail, getUserPlayList, getUserLikeList } from './User'
 
@@ -14,7 +14,9 @@ export const searchResultAPI = searchResult // 搜索结果
 
 export const getSongByIdAPI = getSongById // 歌曲 - 播放地址
 export const getLyricByIdAPI = getLyricById // 歌曲 - 歌词数据
-export const getSongCheckAPI = getSongCheck // 歌曲 - 歌词数据
+export const getSongCheckAPI = getSongCheck
+export const getSongUrlAPI = getSongUrl
+
 
 export const getAlbumByIdAPI = getAlbumById // 专辑详情
 export const getPlayListDetailAPI = getPlayListDetail // 歌单详情

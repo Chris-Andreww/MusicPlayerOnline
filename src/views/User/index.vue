@@ -84,8 +84,9 @@ const toLogin = () => {
 }
 
 //过滤出需要显示的歌单（自己收藏的）
-const filterLikePlayList = computed(() => { 
-  return likePlayList.value.filter(obj => obj.subscribed) }
+const filterLikePlayList = computed(() => {
+  return likePlayList.value.filter(obj => obj.subscribed)
+}
 )
 
 //过滤出需要显示的歌单（自己创建的）
@@ -117,6 +118,9 @@ const getData = async () => {
 }
 
 onMounted(async () => {
+  if (store.uid) {
+    isLogin.value = true
+  }
   getData()
 })
 watch(() => store.uid, () => {

@@ -16,7 +16,6 @@ import { useRouter } from 'vue-router';
 import { usePlayId } from "@/store";
 
 const props = defineProps({
-  value: String,
   type: Number
 })
 const resultList = ref([]) // 搜索结果
@@ -36,7 +35,7 @@ const onLoad = async () => {
     loading.value = false;
   }, 1000);
   loading.value = true;
-  const res = await getSongsData(props.value, props.type, page.value)
+  const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.djRadios === undefined) { // 没有更多数据了
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
@@ -54,9 +53,9 @@ const toDetail = (id) => {
   })
 }
 
-watch(() => props.value, async () => {
+watch(() => store.searchVal, async () => {
   page.value = 1
-  const res = await getSongsData(props.value, props.type, page.value)
+  const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.djRadios === undefined) {
     resultList.value = [];
     return;

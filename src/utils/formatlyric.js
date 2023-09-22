@@ -15,7 +15,6 @@ export const trans_formatLyr = (lyricStr, translyricStr, keyArr) => {
   let contentArr2 = translyricStr.split(reg).slice(1)
   let lyricObj = {}//用来临时存放遍历时间和歌词的原歌词
   let translyricObj = {}//用来临时存放遍历时间和歌词的翻译歌词
-  console.log(lyricStr);
 
   //遍历翻译歌词
   timeArr2?.forEach((item, index) => {

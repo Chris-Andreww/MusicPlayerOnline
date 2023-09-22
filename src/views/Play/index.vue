@@ -34,19 +34,20 @@
         <li v-html="val"></li>
       </ul>
     </div>
-    <audio controls @ended="playState = false" ref="audio" preload="true" loop
-      :src="`https://music.163.com/song/media/outer/url?id=${id}.mp3`"></audio>
+    <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"></audio>
     <div class="controller">
+      <div class="repeat iconfont icon-24gl-repeat2" @click="playRepOrRam(1)"></div>
       <div class="before iconfont icon-xiangzuoshouqi" @click="changeSongs(1)"></div>
       <div class="middle iconfont icon-bofang" @click="audioStart"></div>
       <div class="after iconfont icon-xiangyouzhankai" @click="changeSongs(2)"></div>
+      <div class="random iconfont icon-24gl-shuffle" @click="playRepOrRam(2)"></div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
-import { getSongByIdAPI, getLyricByIdAPI } from '@/api'
+import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI } from '@/api'
 import { usePlayId } from '@/store'
 import { trans_formatLyr, _formatLyr } from '@/utils/formatlyric'
 
@@ -59,19 +60,93 @@ const keyArr = ref({}) //负责存储所有的key值，用来判断当前歌词�
 const store = usePlayId()
 const refs = getCurrentInstance()
 const curPlayList = ref([]) //存放当前歌单中显示的歌曲
+const songUrl = ref('') //存放歌曲url
+const toggleIndex = ref(0)  //切换歌曲时的歌曲索引
 
 const needleDeg = computed(() => {
   return playState.value ? '-7deg' : '-38deg'
 })
 
 //用于切换歌曲，1为上一首，2为下一首
-const changeSongs = (o) => {
-  console.log(o);
+const changeSongs = (btn) => {
+  toggleIndex.value = curPlayList.value.indexOf(id.value)
+  let index = toggleIndex.value
+  if (curPlayList.value.length == 1) {
+    return
+  }
+  if (btn == 1) {
+    if (index == 0) { //如果已经是第一首，就切换到最后一首
+      toggleIndex.value = curPlayList.value.length
+      index = toggleIndex.value
+    } else if (store.randomState) { //如果是随机播放，则上一首和下一首都进行随机
+      randomSong()
+    }
+    index--
+    id.value = curPlayList.value[index]
+    getSong()
+  } else {
+    if (index == curPlayList.value.length - 1) {  //如果是最后一首，就切换到第一首
+      toggleIndex.value = -1
+      index = -1
+    } else if (store.randomState) {
+      randomSong()
+    }
+    index++
+    id.value = curPlayList.value[index]
+    getSong()
+  }
+}
+
+//重复播放或随机播放，1为重复，2为随机
+const playRepOrRam = (btn) => {
+  let rep = document.querySelector('.repeat')
+  let ram = document.querySelector('.random')
+
+  if (btn == 1) {
+    ram.classList.remove('active')
+    rep.classList.toggle('active')
+    let audio = document.querySelector("audio");
+    audio.toggleAttribute("loop");  //第一次点击添加，第二次点击移除
+    store.repeatState = !store.repeatState
+    store.randomState = false
+  } else {
+    rep.classList.remove('active')
+    ram.classList.toggle('active')
+    store.randomState = !store.randomState
+    store.repeatState = false
+  }
+}
+
+//自动切换到下一首
+const toNextSong = () => {
+  if (store.randomState) {
+    randomSong()
+    return
+  }
+  changeSongs(2)
+}
+
+//随机切换歌曲
+const randomSong = () => {
+  let randomIndex = Math.floor(Math.random() * curPlayList.value.length); // 生成随机下标
+  id.value = curPlayList.value[randomIndex]
+  getSong()
+}
+
+//用于恢复用于之前的配置
+const recoveryConfig = () => {
+  if (store.repeatState) {
+    playRepOrRam(1)
+  } else if (store.randomState) {
+    playRepOrRam(2)
+  }
 }
 
 const getSong = async () => {
   const res = await getSongByIdAPI(id.value)
+  const url = await getSongUrlAPI(id.value)
   songInfo.value = res.data.songs[0]
+  songUrl.value = url.data.data[0].url
 
   lyric.value = {}
   keyArr.value = {}
@@ -89,6 +164,8 @@ const getSong = async () => {
   if (!Object.keys(lyric.value).length) { //如果遍历的歌词对象中没有内容，则没有歌词
     lyric.value[0] = '暂无歌词信息'
   }
+  playState.value = false //设置false，方便切歌时自动播放
+  audioStart()  //自动播放音乐
 }
 
 const audioStart = () => {
@@ -117,6 +194,7 @@ onMounted(() => {
   curPlayList.value = store.curPlayList
   getSong()
   showLyric()
+  recoveryConfig()
 })
 
 watch(() => playTime.value, () => {
@@ -125,10 +203,11 @@ watch(() => playTime.value, () => {
 })
 
 watch(() => store.id, (newv) => {
-  playState.value = false  //如果用户在播放时切换音乐，就暂停封面旋转
   id.value = newv
+  curPlayList.value = store.curPlayList
   getSong()
   showLyric()
+  recoveryConfig()
 })
 
 </script>
@@ -290,7 +369,7 @@ audio {
 }
 
 .lrc.active {
-  font-size: 22px;
+  font-size: 20px;
   color: #fff;
   text-align: center;
 }
@@ -316,11 +395,22 @@ audio {
   position: absolute;
   display: flex;
   justify-content: space-around;
+  align-items: center;
   z-index: 5;
-  color: rgba(186, 186, 186, 0.826);
+  color: rgba(224, 224, 224, 0.888);
+
+  .repeat {
+    font-size: 20px;
+    color: rgba(160, 159, 159, 0.888);
+
+    &.active {
+      color: white
+    }
+  }
 
   .before {
     font-size: 30px;
+
   }
 
   .middle {
@@ -329,6 +419,15 @@ audio {
 
   .after {
     font-size: 30px;
+  }
+
+  .random {
+    font-size: 20px;
+    color: rgba(160, 159, 159, 0.888);
+
+    &.active {
+      color: white
+    }
   }
 }
 </style>

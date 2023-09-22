@@ -24,69 +24,72 @@
     </router-view>
   </div>
 </template>
-<script>
+<script setup>
 import { hotSearchAPI } from "@/api";
 import { getSearchSuggest } from '@/utils/getData'
 import { usePlayId } from '@/store'
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 
-export default {
-  data () {
-    return {
-      SuggestVal: [],  //存放搜索建议
-      value: '',  //最终的搜索内容
-      pendingVal: '', //存放暂时输入的内容（显示搜索建议）
-      hotArr: [],
-      showSuggest: false,
-      timer: null,
-      store: usePlayId()
-    };
-  },
-  async created () {
-    const res = await hotSearchAPI();
-    this.hotArr = res.data.result.hots;
-  },
-  methods: {
-    inputFn (inputVal) {
-      // 防抖策略
-      if (this.timer) clearTimeout(this.timer);
-      this.timer = setTimeout(async () => {
-        if (inputVal.length === 0) {
-          this.SuggestVal = []
-          return;
-        }
-        let res = await getSearchSuggest(inputVal)
-        this.SuggestVal = res.data.result.allMatch
-      }, 400);
-    },
-    async clickItem (val) {
-      // 点击关键词
-      this.pendingVal = val
-      this.showSuggest = false
-      this.value = val; // 选中的关键词显示到搜索框
-      this.$router.push({
-        path: '/layout/search/searchlist'
-      })
-      setTimeout(() => {
-        this.store.searchVal = this.value
-      }, 100)
+const SuggestVal = ref([])  //存放搜索建议
+const value = ref('')  //最终的搜索内容
+const pendingVal = ref('') //存放暂时输入的内容（显示搜索建议）
+const hotArr = ref([])
+const showSuggest = ref(false)
+const timer = ref(null)
+const store = usePlayId()
+const router = useRouter()
 
-    },
-    //用户回车确认搜索时
-    search () {
-      this.showSuggest = false
-      this.value = this.pendingVal
-      if (!this.value) {  //如果用户没有输入就回车
-        return
-      }
-      this.$router.push({
-        path: '/layout/search/searchlist'
-      })
-      setTimeout(() => {
-        this.store.searchVal = this.value
-      }, 100)
+onMounted(async () => {
+  const res = await hotSearchAPI();
+  hotArr.value = res.data.result.hots;
+});
+
+const inputFn = (inputVal) => {
+  // 防抖策略
+  if (timer.value) clearTimeout(timer.value);
+  timer.value = setTimeout(async () => {
+    if (inputVal.length === 0) {
+      SuggestVal.value = []
+      return;
     }
+    let res = await getSearchSuggest(inputVal)
+    SuggestVal.value = res.data.result.allMatch
+  }, 400);
+};
+
+const clickItem = (val) => {
+  // 点击关键词
+  pendingVal.value = val
+  showSuggest.value = false
+  value.value = val; // 选中的关键词显示到搜索框
+  router.push({
+    path: '/layout/search/searchlist'
+  })
+  store.searchVal = value.value
+};
+
+const search = () => {
+  showSuggest.value = false
+  value.value = pendingVal.value
+  if (!value.value) {  //如果用户没有输入就回车
+    store.searchVal = value.value
+    router.back()
+    return
   }
-}
+  router.push({
+    path: '/layout/search/searchlist'
+  })
+  store.searchVal = value.value
+};
+
+//如果输入框为空，就显示热搜
+watch(() => store.searchVal, (newv) => {
+  if (!newv) {
+    pendingVal.value = ''
+    value.value = ''
+  }
+})
 </script>
 
 <style lang="scss" scoped>

@@ -18,10 +18,8 @@ import { usePlayId } from '@/store'
 import { getSongCheckAPI } from '@/api'
 
 const props = defineProps({
-  value: String,
   type: Number
 })
-
 
 const resultList = ref([]) // 搜索结果
 const loading = ref(false) // 加载中 (状态) - 只有为false, 才能触底后自动触发onload方法
@@ -32,7 +30,7 @@ const store = usePlayId()
 // 触底事件
 const onLoad = async () => {
   loading.value = true;
-  const res = await getSongsData(props.value, props.type, page.value)
+  const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.songs === undefined) { // 没有更多数据了
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
@@ -55,7 +53,7 @@ const playFn = async (id) => {
   store.id = id
 }
 
-watch(() => props.value, async () => {
+watch(() => store.searchVal, async () => {
   resultList.value=[]
   page.value = 1
   onLoad()

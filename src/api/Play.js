@@ -1,5 +1,11 @@
 import request from '../utils/request'
 
+// 获取歌曲url信息
+export const getSongUrl = (id) => request({
+  url: `/song/url/v1?id=${id}&level=standard`,
+  method: "GET"
+})
+
 // 播放页 - 获取歌曲详情
 export const getSongById = (id) => request({
   url: `/song/detail?ids=${id}`,

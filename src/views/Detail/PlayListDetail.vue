@@ -23,7 +23,7 @@
       </van-list>
     </div>
     <!-- 无版权或vip歌曲显示 -->
-    <div class="noSongToast">当前歌曲为会员歌曲或无版权歌曲，暂时无法播放~~</div>
+    <div class="noSongToast">当前歌曲为会员歌曲，只能试听30秒~~</div>
   </div>
 </template>
 <script setup>
@@ -59,7 +59,11 @@ const onLoad = async () => {
     return;
   }
   songsInfo.value = [...songsInfo.value, ...res.data.songs];
-  store.curPlayList = songsInfo.value
+  //用于歌曲切换而创建的列表
+  store.curPlayList = songsInfo.value.map(val => {
+    return val.id
+  })
+
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
 }
@@ -72,6 +76,9 @@ const playFn = async (id) => {
     setTimeout(() => {
       elem.classList.remove('fadein')
     }, 2000)
+  }
+  if (store.id == id) {  //如果点击的歌曲和当前正在播放的歌曲相同，则显示播放页
+    store.showSlideBar = true
     return
   }
   store.id = id

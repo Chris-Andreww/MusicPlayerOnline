@@ -47,6 +47,7 @@ const showSlider = () => {
     doc.style.left = -doc.offsetWidth + 'px'
     root.style.overflow = '';
     isSlider.value = false
+    store.showSlideBar = false
   } else {
     //打开侧边栏
     doc.style.left = '0px'
@@ -59,16 +60,6 @@ const closePage = () => {
   router.back()
 }
 
-watch(() => store.isPlay, (newv) => {
-  let elem = document.querySelector('.playrotate')
-  if (newv) {
-    elem.classList.remove('icon-bofang')
-    elem.classList.add('icon-zanting')
-  } else {
-    elem.classList.remove('icon-zanting')
-    elem.classList.add('icon-bofang')
-  }
-})
 watch(route, (to) => {
   if (to.fullPath == '/layout/search' || to.fullPath == '/layout/home' || to.fullPath == '/layout/user') {
     showNavBack.value = false
@@ -80,6 +71,12 @@ watch(route, (to) => {
 });
 watch(() => store.id, () => {
   showSlider()
+})
+
+watch(() => store.showSlideBar, (isshow) => {
+  if (isshow == true) {
+    showSlider()
+  }
 })
 
 onMounted(() => {
