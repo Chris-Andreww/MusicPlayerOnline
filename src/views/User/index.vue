@@ -97,7 +97,7 @@ const getData = async () => {
   //获取当前用户的登录状态
   let res = await getUserStatusAPI()
 
-  if (!res.data.data.account) { //如果当前用户未登录
+  if (res.data.data.code != 200) { //如果当前用户未登录
     return
   }
   let uid = res.data.data.profile.userId
@@ -119,9 +119,9 @@ const getData = async () => {
 
 onMounted(async () => {
   if (store.uid) {
-    isLogin.value = true
+    getData()
   }
-  getData()
+  isLogin.value = false
 })
 watch(() => store.uid, () => {
   getData()

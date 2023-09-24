@@ -1,22 +1,14 @@
 <template>
   <div class='login'>
     <div class="inputBar">
-      <van-cell-group inset>
-        <!-- 输入手机号，调起手机号键盘 -->
-        <van-field v-model="phone" type="tel" label="手机号：" label-align="center" placeholder="请输入手机号">
-          <template #left-icon>
-            <div class="iconfont icon-shouji" style="font-size: 20px;"></div>
-          </template>
-        </van-field>
-        <!-- 输入密码 -->
-        <van-field v-model="password" type="password" label="密码：" label-align="center" placeholder="请输入密码">
-          <template #left-icon>
-            <div class="iconfont icon-jiesuo"></div>
-          </template>
-        </van-field>
-      </van-cell-group>
+      <!-- 输入手机号，调起手机号键盘 -->
+      <input type="tel" v-model="phoneNumber" placeholder="手机号" @input="limitToNumber">
+      <div class="iconfont icon-shouji" style="font-size: 20px;"></div>
+      <!-- 输入密码 -->
+      <input type="password" v-model="password" placeholder="密码">
+      <div class="iconfont icon-jiesuo"></div>
     </div>
-    <van-button class="button" round @click="Login(phone, password)"
+    <van-button class="button" round @click="Login(phoneNumber, password)"
       color="linear-gradient(to right, #ff6034, #ee0a24)">确认提交</van-button>
   </div>
   <div class="errorToast">账号或密码错误！</div>
@@ -28,13 +20,19 @@ import { UserLoginAPI } from '@/api';
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router'
 
-const phone = ref('')
+const phoneNumber = ref('')
 const password = ref('')
 const router = useRouter()
 const store = usePlayId()
 
-const Login = async (phone, password) => {
-  let res = await UserLoginAPI({ phone, password })
+//让手机号输入框只能输入数字
+const limitToNumber = ()=>{
+  // 使用正则表达式将非数字字符替换为空字符串
+  phoneNumber.value = phoneNumber.value.replace(/\D+/g, '');
+}
+
+const Login = async (phoneNumber, password) => {
+  let res = await UserLoginAPI({ phoneNumber, password })
   if (res.data.code != 200) {
     let elem = document.querySelector('.errorToast')
     elem.classList.add('fadein')

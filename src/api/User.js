@@ -26,6 +26,6 @@ export const getUserLikeList = (uid) => request({
 
 // 用户登录
 export const UserLogin = (userinfo) => request({
-  url: `/login/cellphone?phone=${userinfo.phone}&password=${userinfo.password}`,
+  url: `/login/cellphone?phone=${userinfo.phoneNumber}&password=${userinfo.password}`,
   method: "GET"
 })

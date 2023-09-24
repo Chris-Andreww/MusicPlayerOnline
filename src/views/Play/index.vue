@@ -80,6 +80,7 @@ const changeSongs = (btn) => {
       index = toggleIndex.value
     } else if (store.randomState) { //如果是随机播放，则上一首和下一首都进行随机
       randomSong()
+      return
     }
     index--
     id.value = curPlayList.value[index]
@@ -90,6 +91,7 @@ const changeSongs = (btn) => {
       index = -1
     } else if (store.randomState) {
       randomSong()
+      return
     }
     index++
     id.value = curPlayList.value[index]
@@ -101,17 +103,18 @@ const changeSongs = (btn) => {
 const playRepOrRam = (btn) => {
   let rep = document.querySelector('.repeat')
   let ram = document.querySelector('.random')
+  let audio = document.querySelector("audio");
 
   if (btn == 1) {
     ram.classList.remove('active')
     rep.classList.toggle('active')
-    let audio = document.querySelector("audio");
     audio.toggleAttribute("loop");  //第一次点击添加，第二次点击移除
     store.repeatState = !store.repeatState
     store.randomState = false
   } else {
     rep.classList.remove('active')
     ram.classList.toggle('active')
+    audio.removeAttribute('loop')
     store.randomState = !store.randomState
     store.repeatState = false
   }
@@ -171,12 +174,12 @@ const getSong = async () => {
 const audioStart = () => {
   let doc = document.querySelector('.controller .middle')
   if (!playState.value) {
-    //refs.ctx.$refs用来代替vue2中的this.$refs
-    refs.ctx.$refs.audio.play()
+    //refs.refs用来代替vue2中的this.$refs
+    refs.refs.audio.play()
     doc.classList.remove('icon-bofang')
     doc.classList.add("icon-zanting");
   } else {
-    refs.ctx.$refs.audio.pause()
+    refs.refs.audio.pause()
     doc.classList.add('icon-bofang')
     doc.classList.remove("icon-zanting");
   }
@@ -184,8 +187,8 @@ const audioStart = () => {
 }
 
 const showLyric = () => {
-  refs.ctx.$refs.audio.addEventListener('timeupdate', () => {
-    playTime.value = refs.ctx.$refs.audio?.currentTime
+  refs.refs.audio.addEventListener('timeupdate', () => {
+    playTime.value = refs.refs.audio?.currentTime
   })
 }
 
@@ -401,16 +404,16 @@ audio {
 
   .repeat {
     font-size: 20px;
-    color: rgba(160, 159, 159, 0.888);
+    color: rgba(224, 224, 224, 0.888);
 
     &.active {
-      color: white
+      color: rgb(250, 94, 94);
+      font-weight: bold;
     }
   }
 
   .before {
     font-size: 30px;
-
   }
 
   .middle {
@@ -423,10 +426,11 @@ audio {
 
   .random {
     font-size: 20px;
-    color: rgba(160, 159, 159, 0.888);
+    color: rgba(224, 224, 224, 0.888);
 
     &.active {
-      color: white
+      color: rgb(250, 94, 94);
+      font-weight: bold;
     }
   }
 }

@@ -17,7 +17,7 @@ export const usePlayId = defineStore('playid', () => {
 },
   {
     persist: {
-      paths:['uid','repeatState','randomState']
+      paths: ['uid', 'repeatState', 'randomState', 'albumId', 'djRadioId', 'playListId']
     }
   }
 )
