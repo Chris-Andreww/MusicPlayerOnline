@@ -1,12 +1,16 @@
 <template>
   <div class='login'>
     <div class="inputBar">
-      <!-- 输入手机号，调起手机号键盘 -->
-      <input type="tel" v-model="phoneNumber" placeholder="手机号" @input="limitToNumber">
-      <div class="iconfont icon-shouji" style="font-size: 20px;"></div>
+      <!-- 输入手机号 -->
+      <div class="phoneInput">
+        <div class="iconfont icon-shouji" style="font-size: 20px;"></div>
+        <input v-model="phoneNumber" placeholder="手机号" @input="limitToNumber">
+      </div>
       <!-- 输入密码 -->
-      <input type="password" v-model="password" placeholder="密码">
-      <div class="iconfont icon-jiesuo"></div>
+      <div class="passInput">
+        <div class="iconfont icon-jiesuo"></div>
+        <input type="password" v-model="password" placeholder="密码">
+      </div>
     </div>
     <van-button class="button" round @click="Login(phoneNumber, password)"
       color="linear-gradient(to right, #ff6034, #ee0a24)">确认提交</van-button>
@@ -26,7 +30,7 @@ const router = useRouter()
 const store = usePlayId()
 
 //让手机号输入框只能输入数字
-const limitToNumber = ()=>{
+const limitToNumber = () => {
   // 使用正则表达式将非数字字符替换为空字符串
   phoneNumber.value = phoneNumber.value.replace(/\D+/g, '');
 }
@@ -59,6 +63,12 @@ const Login = async (phoneNumber, password) => {
 
   .inputBar {
     font-size: 20px;
+    .phoneInput{
+      display: flex;
+    }
+    .passInput{
+      display: flex;
+    }
   }
 
   .button {
