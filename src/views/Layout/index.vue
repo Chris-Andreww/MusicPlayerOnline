@@ -13,9 +13,10 @@
           <component :is="Component"></component>
         </keep-alive>
       </router-view>
-      <div class="playBottom" @click="showSlider">
-        <div class="playrotate iconfont icon-bofang" :class="{ active: isSlider }"></div>
-      </div>
+      <van-floating-bubble :offset="offset" axis="xy" icon="chat" magnetic="x" @click="showSlider"
+        style="width: 60px;height: 60px;">
+        <div class="playrotate iconfont icon-bofang" style="font-size:25px;padding-left: 5px;"></div>
+      </van-floating-bubble>
     </div>
     <van-tabbar route>
       <van-tabbar-item replace to="/layout/home" icon="home-o">首页</van-tabbar-item>
@@ -36,6 +37,7 @@ const isSlider = ref(false);
 const route = useRoute()
 const router = useRouter()
 const store = usePlayId()
+const offset = ref({ x: 20, y: 300 })
 const showNavBack = ref(false)
 
 const showSlider = () => {
@@ -84,38 +86,12 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 /* 中间内容区域 - 容器样式(留好上下导航所占位置) */
 .main {
   padding-top: 46px;
   padding-bottom: 50px;
   overflow: hidden;
-
-  .playBottom {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    top: 35%;
-    right: 5%;
-    border-radius: 50%;
-    background-color: rgb(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 30;
-
-    .playrotate {
-      font-size: 30px;
-      padding-left: 5px;
-      color: white;
-      transform: rotateZ(0deg);
-      transition: transform 0.5s;
-
-      &.active {
-        transform: rotateZ(180deg);
-      }
-    }
-  }
 
   .navback {
     font-size: 20px;
@@ -132,5 +108,10 @@ onMounted(() => {
     z-index: 30;
     transition: left 0.8s;
   }
+}
+
+/* 定义悬浮按钮主题色 */
+:root {
+  --van-floating-bubble-background: #6f7070bd;
 }
 </style>

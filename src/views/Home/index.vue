@@ -2,7 +2,7 @@
   <div class="home">
     <p class="title">推荐歌单</p>
     <div class="recList">
-      <div v-for="(item, index) in recPlayList" :key="index">
+      <div v-for="(item, index) in recPlayList" :key="index" @click="toDetail(item.id)">
         <img v-img-lazy="item.picUrl">
         <p>{{ item.name }}</p>
       </div>
@@ -28,15 +28,16 @@
 </template>
 
 <script setup>
-import { GetAnonimousAPI } from '@/api';
-import { recPlayListAPI, recsongsAPI } from '@/api'
+import { GetAnonimousAPI, recPlayListAPI, recsongsAPI } from '@/api';
 import { onMounted, ref } from 'vue';
 import { usePlayId } from '@/store'
+import { useRouter } from 'vue-router'
 import { getSongCheckAPI } from '@/api'
 
 const recPlayList = ref([])
 const recSongsList = ref([])
 const store = usePlayId()
+const router = useRouter()
 
 const playFn = async (id) => {
   const checkRes = await getSongCheckAPI(id)
@@ -55,14 +56,19 @@ const playFn = async (id) => {
   })
 }
 
+const toDetail = (id) => {
+  store.playListId = id
+  router.push({
+    path: '/layout/PlayListDetail'
+  })
+}
+
 onMounted(async () => {
   await GetAnonimousAPI()
   let res = await recPlayListAPI()
   let res2 = await recsongsAPI()
   recPlayList.value = res.data.recommend
   recSongsList.value = res2.data.data.dailySongs
-  console.log(res);
-  console.log(res2);
 })
 </script>
 
@@ -83,7 +89,7 @@ onMounted(async () => {
   }
 
   .recList {
-    height: 150px;
+    height: 180px;
     width: 100%;
     display: flex;
     overflow-x: scroll;
@@ -102,7 +108,7 @@ onMounted(async () => {
       }
 
       p {
-        font-size: 12px;
+        font-size: 14px;
       }
     }
   }

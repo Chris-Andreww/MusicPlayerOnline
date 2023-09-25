@@ -4,7 +4,7 @@ import { hotSearch, searchSuggest, searchResult } from './Search'
 import { getSongById, getLyricById, getSongCheck, getSongUrl } from './Play'
 import { getAlbumById, getPlayListTrack, getPlayListDetail, getdjRadioDetail, getdjRadioTrack } from './Detail'
 import { getUserStatus, UserLogin, getUserDetail, getUserPlayList, getUserLikeList, makeQRCodekey, makeQRCode, checkQRCode, GetAnonimous } from './User'
-import { addLikeSong } from './PanelFun'
+import { addLikeSong, addSongToList } from './PanelFun'
 
 export const recPlayListAPI = recPlayList // 请求推荐歌单的方法导出
 export const recsongsAPI = recsongs// 首页 - 推荐最新音乐
@@ -37,3 +37,5 @@ export const getUserPlayListAPI = getUserPlayList // 用户歌单
 export const getUserLikeListAPI = getUserLikeList // 用户喜欢歌曲
 
 export const addLikeSongAPI = addLikeSong // 添加喜欢歌曲
+export const addSongToListAPI = addSongToList // 添加喜欢至歌单
+

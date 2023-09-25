@@ -5,3 +5,9 @@ export const addLikeSong = (id, islike) => request({
   url: `/like?id=${id}&like=${islike}`,
   method: "GET"
 })
+
+// 添加歌曲至歌单
+export const addSongToList = (pid, id) => request({
+  url: `/playlist/tracks?op=add&pid=${pid}&tracks=${id}&timestamp=${Date.now()}`,
+  method: "GET"
+})

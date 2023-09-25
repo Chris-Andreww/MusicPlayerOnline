@@ -38,9 +38,9 @@
     <div class="morePanel">
       <!-- 后添加的icon-xin1会覆盖前面的类icon-xin，使其显示实心的心按钮 -->
       <div class="like iconfont icon-xin" :class="{ 'icon-xin1': isLike }" @click="panelFun(0)"></div>
-      <div class="add iconfont icon-xinjian"></div>
-      <div class="comment iconfont icon-pinglun"></div>
-      <div class="gengduo iconfont icon-gengduo"></div>
+      <div class="add iconfont icon-xinjian" @click="panelFun(1)"></div>
+      <div class="comment iconfont icon-pinglun" @click="panelFun(2)"></div>
+      <div class="gengduo iconfont icon-gengduo" @click="panelFun(3)"></div>
     </div>
     <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"
       controlsList="nodownload noplaybackrate"></audio>
@@ -51,17 +51,30 @@
       <div class="after iconfont icon-xiangyouzhankai" @click="changeSongs(2)"></div>
       <div class="random iconfont icon-24gl-shuffle" @click="playRepOrRam(2)"></div>
     </div>
+    <div class="mask" @click="closeAddplaylist" v-if="PlayList.length">
+      <div class="addplaylistMsg">收藏到歌单</div>
+      <van-list class="addplaylist">
+        <van-cell v-for="(obj, index) in PlayList" center :title="obj.name" @click="addToList(obj.id, id)"
+          :label="`${obj.trackCount}首`" :key="index">
+          <template #icon>
+            <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
+          </template>
+        </van-cell>
+      </van-list>
+    </div>
+    <showToast ref="toast"></showToast>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
-import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI } from '@/api'
+import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI, addSongToListAPI } from '@/api'
 import { usePlayId } from '@/store'
 import { trans_formatLyr, _formatLyr } from '@/utils/formatlyric'
 
 const playState = ref(false)  // 音乐播放状态(true播放, false暂停)
 const id = ref(0) // 音乐id
+const toast = ref(null)
 const songInfo = ref({})  // 歌曲信息
 const lyric = ref({}) // 歌词对象
 const playTime = ref(0) //记录当前播放的时间
@@ -72,12 +85,27 @@ const curPlayList = ref([]) //存放当前歌单中显示的歌曲
 const songUrl = ref('') //存放歌曲url
 const toggleIndex = ref(0)  //切换歌曲时的歌曲索引
 const isLike = ref(false)
+const PlayList = ref([])  //保存用户收藏的歌单，用于添加歌曲至歌单
 
 const needleDeg = computed(() => {
   return playState.value ? '-7deg' : '-38deg'
 })
 
-//index值为0代表喜欢按钮
+const closeAddplaylist = () => {
+  PlayList.value = []
+}
+
+//添加歌曲到歌单，pid为歌单id，id为歌曲id
+const addToList = async (pid, id) => {
+  let res = await addSongToListAPI(pid, id)
+  if (res.data.body.code != 200) {
+    toast.value.trigger(res.data.body.message, 2000);
+    return
+  }
+  toast.value.trigger('已收藏到歌单', 2000);
+}
+
+//index值为0代表喜欢按钮，2是添加歌曲，3是评论，4更多操作
 const panelFun = async (index) => {
   if (index == 0) {
     if (isLike.value) {
@@ -87,6 +115,12 @@ const panelFun = async (index) => {
     }
     await addLikeSongAPI(id.value, true)
     isLike.value = true
+  }
+  if (index == 1) {
+    //首先获取该用户的所有歌单
+    let res = await getUserPlayListAPI(store.uid)
+    //过滤出是用户创建的歌单而不是所有歌单
+    PlayList.value = res.data.playlist.filter(obj => !obj.subscribed)
   }
 }
 
@@ -163,7 +197,6 @@ const getUserLikeList = async () => {
   //获取用户喜欢列表
   let userlike = await getUserLikeListAPI(store.uid, Date.now())
   //如果当前歌曲是用户喜欢过的，就显示红色的喜欢按钮
-  console.log(id.value);
   if (userlike.data.ids.includes(id.value)) {
     isLike.value = true
     return
@@ -351,6 +384,36 @@ audio {
     z-index: 1;
     opacity: 1;
     filter: blur(20px);
+  }
+
+  .mask {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 灰色半透明背景 */
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+
+    .addplaylistMsg {
+      width: 80%;
+      background-color: white;
+      text-align: center;
+      font-size: 18px;
+      box-sizing: border-box;
+      padding: 10px;
+    }
+
+    .addplaylist {
+      width: 80%;
+      height: 50%;
+      overflow: scroll;
+    }
   }
 }
 

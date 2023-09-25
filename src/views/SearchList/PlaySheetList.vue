@@ -15,6 +15,7 @@ import { getSongsData } from "@/utils/getData";
 import { defineProps, ref, watch } from "vue";
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router';
+import { formatNum } from "@/utils/formatNum";
 
 
 const props = defineProps({
@@ -28,10 +29,6 @@ const timer = ref(null)
 const store = usePlayId()
 const router = useRouter()
 
-const formatNum = (num) => {
-  if (num < 10000) num
-  else return (num / 10000).toFixed(1) + '万' //取小数后一位，例如1.402就为1.4万
-}
 // 触底事件
 const onLoad = async () => {
   //节流操作

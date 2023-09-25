@@ -12,11 +12,17 @@
       </div>
     </div>
     <div class="songsList">
-      <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false" @load="onLoad">
+      <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false"
+        @load="onLoad">
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.dj.brand" :key="index"
-          @click="playFn(obj.mainSong.id)" :value="index + 1">
+          @click="playFn(obj.mainSong.id)">
           <template #icon>
-            <img v-img-lazy="obj.coverUrl" style="width: 15%;padding-right: 10px;">
+            <div class="container">
+              <img v-img-lazy="obj.coverUrl">
+            </div>
+          </template>
+          <template #right-icon>
+            <p style="color: #969799;">{{ index + 1 }}</p>
           </template>
         </van-cell>
       </van-list>
@@ -152,6 +158,19 @@ onMounted(() => {
 
   .van-cell {
     border-bottom: 1px solid lightgray;
+
+    .container {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        padding-right: 10px;
+      }
+    }
   }
 }
 </style>

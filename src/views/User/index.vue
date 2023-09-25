@@ -15,30 +15,14 @@
           <van-cell @click="toDetail(likePlayList[0].id)" center :title="`${userProfile.nickname}喜欢的音乐`"
             :label="`${userProfile.userlike?.length}首， 播放${userProfile.likeplaynum}次`">
             <template #icon>
-              <img v-img-lazy="likePlayList[0]?.coverImgUrl" style="width: 15%;padding-right: 10px;">
+              <img :src="likePlayList[0]?.coverImgUrl" style="width: 15%;padding-right: 10px;">
             </template>
           </van-cell>
         </van-list>
         <!-- 用户收藏的歌单信息 -->
-        <div class="FavPlaylists" style="margin-top: 30px;">收藏的歌单</div>
-        <van-list>
-          <van-cell v-for="(obj, index) in filterLikePlayList" center :title="obj.name" @click="toDetail(obj.id)"
-            :label="`${obj.trackCount}首， 播放${obj.playCount}次`" :key="index">
-            <template #icon>
-              <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
-            </template>
-          </van-cell>
-        </van-list>
+        <userPlayList :PlayList="filterLikePlayList" :message="'收藏的歌单'"></userPlayList>
         <!-- 用户创建的歌单信息 -->
-        <div class="FavPlaylists" style="margin-top: 30px;">创建的歌单</div>
-        <van-list>
-          <van-cell v-for="(obj, index) in filterCreatePlayList" center :title="obj.name" @click="toDetail(obj.id)"
-            :label="`${obj.trackCount}首， 播放${obj.playCount}次`" :key="index">
-            <template #icon>
-              <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
-            </template>
-          </van-cell>
-        </van-list>
+        <userPlayList :PlayList="filterCreatePlayList" :message="'创建的歌单'"></userPlayList>
       </van-tab>
       <van-tab title="动态">动态</van-tab>
     </van-tabs>
@@ -56,6 +40,7 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router'
 import Userinfo from '@/components/userinfo.vue';
+import userPlayList from './userPlayList.vue';
 
 const userData = ref({})
 const userProfile = ref({})
@@ -116,6 +101,8 @@ const getData = async () => {
 onMounted(async () => {
   if (store.uid) {
     getData()
+    isLogin.value = true
+    return
   }
   isLogin.value = false
 })

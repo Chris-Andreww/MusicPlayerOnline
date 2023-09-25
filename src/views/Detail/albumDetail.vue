@@ -14,9 +14,14 @@
     <div class="songsList">
       <van-list>
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj.name" :label="obj.ar[0].name" :key="index"
-          @click="playFn(obj.id)" :value="index + 1">
+          @click="playFn(obj.id)">
           <template #icon>
-            <img v-img-lazy="obj.al.picUrl" style="width: 15%;padding-right: 10px;">
+            <div class="container">
+              <img v-img-lazy="obj?.al.picUrl">
+            </div>
+          </template>
+          <template #right-icon>
+            <p style="color: #969799;">{{ index + 1 }}</p>
           </template>
         </van-cell>
       </van-list>
@@ -27,7 +32,7 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAlbumByIdAPI,getSongCheckAPI } from '@/api'
+import { getAlbumByIdAPI, getSongCheckAPI } from '@/api'
 import { formatDate } from '@/utils/formatTime'
 import { usePlayId } from "@/store"
 
@@ -136,6 +141,19 @@ onMounted(() => {
 
   .van-cell {
     border-bottom: 1px solid lightgray;
+
+    .container {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        padding-right: 10px;
+      }
+    }
   }
 
   .noSongToast {

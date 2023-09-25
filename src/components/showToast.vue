@@ -36,6 +36,7 @@ defineExpose({
   left: 50%;
   top: 50%;
   opacity: 0;
+  z-index: 50;
 
   transition: opacity 1s;
 
