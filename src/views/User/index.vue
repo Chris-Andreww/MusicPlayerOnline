@@ -1,11 +1,6 @@
 <template>
   <div class="user-page" v-if="isLogin">
-    <div class="userinfo">
-      <img :src="userProfile.avatarUrl" class="avatar">
-      <div class="username">{{ userProfile.nickname }}</div>
-      <div class="userfans">关注：{{ userProfile.follows }} &nbsp;| &nbsp;粉丝：{{ userProfile.followeds }}</div>
-      <div class="userlevel">Lv.{{ userData.level }}</div>
-    </div>
+    <userinfo :userProfile="userProfile" :userData="userData"></userinfo>
     <van-tabs v-model:active="tabActive">
       <van-tab title="主页">
         <!-- 用户听歌排行和喜欢的歌曲 -->
@@ -20,7 +15,7 @@
           <van-cell @click="toDetail(likePlayList[0].id)" center :title="`${userProfile.nickname}喜欢的音乐`"
             :label="`${userProfile.userlike?.length}首， 播放${userProfile.likeplaynum}次`">
             <template #icon>
-              <img :src="likePlayList[0]?.coverImgUrl" style="width: 15%;padding-right: 10px;">
+              <img v-img-lazy="likePlayList[0]?.coverImgUrl" style="width: 15%;padding-right: 10px;">
             </template>
           </van-cell>
         </van-list>
@@ -30,7 +25,7 @@
           <van-cell v-for="(obj, index) in filterLikePlayList" center :title="obj.name" @click="toDetail(obj.id)"
             :label="`${obj.trackCount}首， 播放${obj.playCount}次`" :key="index">
             <template #icon>
-              <img :src="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
+              <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
             </template>
           </van-cell>
         </van-list>
@@ -40,7 +35,7 @@
           <van-cell v-for="(obj, index) in filterCreatePlayList" center :title="obj.name" @click="toDetail(obj.id)"
             :label="`${obj.trackCount}首， 播放${obj.playCount}次`" :key="index">
             <template #icon>
-              <img :src="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
+              <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
             </template>
           </van-cell>
         </van-list>
@@ -60,6 +55,7 @@ import { getUserStatusAPI, getUserDetailAPI, getUserPlayListAPI, getUserLikeList
 import { onMounted, ref, computed, watch } from 'vue';
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router'
+import Userinfo from '@/components/userinfo.vue';
 
 const userData = ref({})
 const userProfile = ref({})
@@ -107,7 +103,7 @@ const getData = async () => {
   userProfile.value = userdetail.data.profile
   userData.value = userdetail.data
   //获取用户喜欢列表
-  let userlike = await getUserLikeListAPI(uid)
+  let userlike = await getUserLikeListAPI(uid, Date.now())
   userProfile.value.userlike = userlike.data.ids
   //获取当前账号的歌单信息
   let playinfo = await getUserPlayListAPI(uid)
@@ -129,39 +125,6 @@ watch(() => store.uid, () => {
 </script>
 
 <style lang="scss" scoped>
-.user-page {
-
-  .userinfo {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-    }
-
-    .username {
-      font-size: 20px;
-      margin-top: 10px;
-    }
-
-    .userfans {
-      font-size: 16px;
-    }
-
-    .userlevel {
-      font-size: 14px;
-      background-color: #8779764b;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-  }
-
-}
-
 .userlike {
   margin-top: 10px;
 

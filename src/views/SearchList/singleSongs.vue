@@ -1,9 +1,9 @@
 <template>
   <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false" @load="onLoad">
-    <van-cell v-for="obj in resultList" center :title="obj.name" :label="obj.ar[0].name" :key="obj.id"
+    <van-cell v-for="(obj,index) in resultList" center :title="obj.name" :label="obj.ar[0].name" :key="index"
       @click="playFn(obj.id)">
       <template #icon>
-        <img :src="obj.al.picUrl" style="width: 15%;padding-right: 10px;">
+        <img v-img-lazy="obj.al.picUrl" style="width: 15%;padding-right: 10px;">
       </template>
     </van-cell>
   </van-list>

@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '@/views/Layout'
 import Home from '@/views/Home'
 import Search from '@/views/Search'
-import Play from '@/views/Play'
 import User from '@/views/User'
 import Login from '@/views/Login'
 import SearchList from '@/views/SearchList/index.vue'
@@ -83,10 +82,6 @@ const routes = [
         }
       }
     ]
-  },
-  {
-    path: '/play',
-    component: Play
   }
 ]
 

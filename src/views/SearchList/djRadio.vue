@@ -3,7 +3,7 @@
     <van-cell v-for="(obj, index) in resultList" center :title="obj.name" :label="obj.dj.nickname" :key="index"
       @click="toDetail(obj.id)">
       <template #icon>
-        <img :src="obj.picUrl" style="width: 15%;padding-right: 10px;">
+        <img v-img-lazy="obj.picUrl" style="width: 15%;padding-right: 10px;">
       </template>
     </van-cell>
   </van-list>

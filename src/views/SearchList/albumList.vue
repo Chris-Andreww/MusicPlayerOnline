@@ -3,7 +3,7 @@
     <van-cell v-for="obj in resultList" center :title="getName(obj)" @click="toDetail(obj.id)"
       :label="`${obj.artist.name} -- ${formatDate(obj.publishTime)}`" :key="obj.id">
       <template #icon>
-        <img :src="obj.picUrl" style="width: 15%;padding-right: 10px;">
+        <img v-img-lazy="obj.picUrl" style="width: 15%;padding-right: 10px;">
       </template>
     </van-cell>
   </van-list>

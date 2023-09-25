@@ -4,7 +4,7 @@
       :key="obj.id" @click="detail">
       <template #icon>
         <div class="singerAvatar">
-          <img :src="obj.avatarUrl" style="width: 100%;padding-right: 10px">
+          <img v-img-lazy="obj.avatarUrl" style="width: 100%;padding-right: 10px">
         </div>
       </template>
     </van-cell>

@@ -34,7 +34,16 @@
         <li v-html="val"></li>
       </ul>
     </div>
-    <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"></audio>
+    <!-- 喜欢评论等操作面板 -->
+    <div class="morePanel">
+      <!-- 后添加的icon-xin1会覆盖前面的类icon-xin，使其显示实心的心按钮 -->
+      <div class="like iconfont icon-xin" :class="{ 'icon-xin1': isLike }" @click="panelFun(0)"></div>
+      <div class="add iconfont icon-xinjian"></div>
+      <div class="comment iconfont icon-pinglun"></div>
+      <div class="gengduo iconfont icon-gengduo"></div>
+    </div>
+    <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"
+      controlsList="nodownload noplaybackrate"></audio>
     <div class="controller">
       <div class="repeat iconfont icon-24gl-repeat2" @click="playRepOrRam(1)"></div>
       <div class="before iconfont icon-xiangzuoshouqi" @click="changeSongs(1)"></div>
@@ -47,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
-import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI } from '@/api'
+import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI } from '@/api'
 import { usePlayId } from '@/store'
 import { trans_formatLyr, _formatLyr } from '@/utils/formatlyric'
 
@@ -62,10 +71,24 @@ const refs = getCurrentInstance()
 const curPlayList = ref([]) //存放当前歌单中显示的歌曲
 const songUrl = ref('') //存放歌曲url
 const toggleIndex = ref(0)  //切换歌曲时的歌曲索引
+const isLike = ref(false)
 
 const needleDeg = computed(() => {
   return playState.value ? '-7deg' : '-38deg'
 })
+
+//index值为0代表喜欢按钮
+const panelFun = async (index) => {
+  if (index == 0) {
+    if (isLike.value) {
+      await addLikeSongAPI(id.value, false) //取消喜欢
+      isLike.value = false
+      return
+    }
+    await addLikeSongAPI(id.value, true)
+    isLike.value = true
+  }
+}
 
 //用于切换歌曲，1为上一首，2为下一首
 const changeSongs = (btn) => {
@@ -136,7 +159,19 @@ const randomSong = () => {
   getSong()
 }
 
-//用于恢复用于之前的配置
+const getUserLikeList = async () => {
+  //获取用户喜欢列表
+  let userlike = await getUserLikeListAPI(store.uid, Date.now())
+  //如果当前歌曲是用户喜欢过的，就显示红色的喜欢按钮
+  console.log(id.value);
+  if (userlike.data.ids.includes(id.value)) {
+    isLike.value = true
+    return
+  }
+  isLike.value = false
+}
+
+//用于恢复配置信息
 const recoveryConfig = () => {
   if (store.repeatState) {
     playRepOrRam(1)
@@ -167,6 +202,7 @@ const getSong = async () => {
   if (!Object.keys(lyric.value).length) { //如果遍历的歌词对象中没有内容，则没有歌词
     lyric.value[0] = '暂无歌词信息'
   }
+  getUserLikeList() //获取用户喜欢的列表
   playState.value = false //设置false，方便切歌时自动播放
   audioStart()  //自动播放音乐
 }
@@ -210,7 +246,6 @@ watch(() => store.id, (newv) => {
   curPlayList.value = store.curPlayList
   getSong()
   showLyric()
-  recoveryConfig()
 })
 
 </script>
@@ -227,6 +262,16 @@ audio {
 
   &::-webkit-media-controls-play-button {
     display: none;
+  }
+
+  /* 当前播放时长 */
+  &::-webkit-media-controls-current-time-display {
+    color: white;
+  }
+
+  /* 总时长 */
+  &::-webkit-media-controls-time-remaining-display {
+    color: white;
   }
 }
 
@@ -264,6 +309,35 @@ audio {
   height: 100%;
   z-index: 2;
   overflow: hidden;
+
+  .morePanel {
+    width: 100%;
+    height: 30px;
+    position: relative;
+    box-sizing: border-box;
+    padding: 0 10%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 5;
+    color: rgba(224, 224, 224, 0.888);
+
+    .like {
+      font-size: 25px;
+    }
+
+    .add {
+      font-size: 25px;
+    }
+
+    .comment {
+      font-size: 25px;
+    }
+
+    .gengduo {
+      font-size: 25px;
+    }
+  }
 
   .song-bg {
     background-position: 50%;

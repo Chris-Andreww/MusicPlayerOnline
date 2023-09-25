@@ -17,7 +17,7 @@
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.ar[0].name" :key="obj.id"
           @click="playFn(obj.id)" :value="index + 1">
           <template #icon>
-            <img :src="obj?.al.picUrl" style="width: 15%;padding-right: 10px;">
+            <img v-img-lazy="obj?.al.picUrl" style="width: 15%;padding-right: 10px;">
           </template>
         </van-cell>
       </van-list>

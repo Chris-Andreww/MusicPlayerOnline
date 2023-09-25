@@ -1,4 +1,4 @@
-import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI,getdjRadioTrackAPI } from "@/api";
+import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI, getdjRadioTrackAPI } from "@/api";
 
 /**
  * 
@@ -12,7 +12,7 @@ export const getSongsData = async (value, type, page) => {
     keywords: value,
     limit: 20,
     type: type, //搜索类型；默认为 1 即单曲 , 取值意义 : 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合, 2000:声音
-    offset: (page - 1) * 20
+    offset: (page - 1) * 20,
   }); // 把搜索结果return出去
 }
 
@@ -38,7 +38,8 @@ export const getPlayListTrack = async (id, page) => {
   return await getPlayListTrackAPI({
     id,
     limit: 20,
-    offset: (page - 1) * 20
+    offset: (page - 1) * 20,
+    timestamp: Date.now()
   }); // 把搜索结果return出去
 }
 

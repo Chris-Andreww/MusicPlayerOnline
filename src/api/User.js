@@ -19,13 +19,37 @@ export const getUserPlayList = (uid) => request({
 })
 
 //获取用户喜欢音乐列表
-export const getUserLikeList = (uid) => request({
-  url: `/likelist?uid=${uid}`,
+export const getUserLikeList = (uid, timestamp) => request({
+  url: `/likelist?uid=${uid}&timestamp=${timestamp}`,
   method: "GET"
 })
 
 // 用户登录
-export const UserLogin = (userinfo) => request({
-  url: `/login/cellphone?phone=${userinfo.phoneNumber}&password=${userinfo.password}`,
+export const UserLogin = (phoneNumber, password) => request({
+  url: `/login/cellphone?phone=${phoneNumber}&password=${password}`,
+  method: "GET"
+})
+
+// 二维码 key 生成接口，添加时间戳，防止浏览器读取缓存导致二维码过期无法重新获取
+export const makeQRCodekey = (timestamp) => request({
+  url: `/login/qr/key?timestamp=${timestamp}`,
+  method: "GET"
+})
+
+// 二维码生成接口
+export const makeQRCode = (key) => request({
+  url: `/login/qr/create?qrimg=true&key=${key}`,
+  method: "GET"
+})
+
+//二维码检测扫码状态接口，添加时间戳，防止浏览器读取缓存导致二维码过期无法重新获取
+export const checkQRCode = (key, timestamp) => request({
+  url: `/login/qr/check?key=${key}&timestamp=${timestamp}`,
+  method: "GET"
+})
+
+//获取游客账号，避免某些接口报错
+export const GetAnonimous = () => request({
+  url: '/register/anonimous',
   method: "GET"
 })

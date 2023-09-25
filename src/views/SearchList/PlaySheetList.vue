@@ -4,7 +4,7 @@
       :label="`${obj.trackCount}个声音，by ${obj.creator.nickname}，播放${formatNum(obj.playCount)}次`" :key="obj.id"
       @click="toDetail(obj.id)">
       <template #icon>
-        <img :src="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
+        <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
       </template>
     </van-cell>
   </van-list>

@@ -1,43 +1,118 @@
 <template>
-  <div>
+  <div class="home">
     <p class="title">推荐歌单</p>
-    <van-row gutter="6">
-      <van-col span="8" v-for="obj in reList" :key="obj.id">
-        <van-image width="100%" height="3rem" fit="cover" :src="obj.picUrl" />
-        <p class="song_name">{{ obj.name }}</p>
-      </van-col>
-    </van-row>
+    <div class="recList">
+      <div v-for="(item, index) in recPlayList" :key="index">
+        <img v-img-lazy="item.picUrl">
+        <p>{{ item.name }}</p>
+      </div>
+    </div>
+    <p class="title">每日推荐</p>
+    <div class="recSongs">
+      <van-list>
+        <van-cell v-for="(obj, index) in recSongsList" center :key="index" @click="playFn(obj.id)">
+          <template #icon>
+            <img v-img-lazy="obj.al.picUrl" style="width: 18%;padding-right: 10px;">
+          </template>
+          <template #title>
+            <span class="subtitle" style="font-size: 16px;">{{ obj.name }}</span>
+            <span class="singlename" style="font-size: 14px;color: #999999;"> - {{ obj.ar[0].name }}</span>
+          </template>
+          <template #label>
+            <van-tag color="#ffe3e0" text-color="red">{{ obj.reason }}</van-tag>
+          </template>
+        </van-cell>
+      </van-list>
+    </div>
   </div>
-  <p class="title">最新音乐</p>
-  <SongItem v-for="obj in songList" :key="obj.id" :name="obj.name" :author="obj.song.artists[0].name" :id="obj.id">
-  </SongItem>
 </template>
 
-<style scoped>
-p {
-  font-size: 16px;
+<script setup>
+import { GetAnonimousAPI } from '@/api';
+import { recPlayListAPI, recsongsAPI } from '@/api'
+import { onMounted, ref } from 'vue';
+import { usePlayId } from '@/store'
+import { getSongCheckAPI } from '@/api'
+
+const recPlayList = ref([])
+const recSongsList = ref([])
+const store = usePlayId()
+
+const playFn = async (id) => {
+  const checkRes = await getSongCheckAPI(id)
+  if (!checkRes.data.success) {
+    let elem = document.querySelector('.noSongToast')
+    elem.classList.add('fadein')
+    setTimeout(() => {
+      elem.classList.remove('fadein')
+    }, 2000)
+    return
+  }
+  store.id = id
+  //用于歌曲切换而创建的列表
+  store.curPlayList = recSongsList.value.map(val => {
+    return val.id
+  })
+}
+
+onMounted(async () => {
+  await GetAnonimousAPI()
+  let res = await recPlayListAPI()
+  let res2 = await recsongsAPI()
+  recPlayList.value = res.data.recommend
+  recSongsList.value = res2.data.data.dailySongs
+  console.log(res);
+  console.log(res2);
+})
+</script>
+
+<style lang="scss" scoped>
+.home {
+  .title {
+    font-size: 20px;
+    padding: 10px;
+
+    .subtitle {
+      font-size: 18px;
+    }
+
+    .singlename {
+      font-size: 16px;
+
+    }
+  }
+
+  .recList {
+    height: 150px;
+    width: 100%;
+    display: flex;
+    overflow-x: scroll;
+
+
+    div {
+      width: 100%;
+      height: 100%;
+      padding: 0px 10px 0px;
+      display: flex;
+      flex-direction: column;
+
+      img {
+        width: 100px;
+        height: 100px;
+      }
+
+      p {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .recSongs {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+  }
 }
 </style>
-
-<script>
-import { recommendMusicAPI, newMusicAPI } from "@/api";
-export default {
-  data () {
-    return {
-      reList: [], // 推荐歌单数据
-      songList: [], // 最新音乐数据
-    };
-  },
-  async created () {
-    const res = await recommendMusicAPI({
-      limit: 6,
-    });
-    this.reList = res.data.result;
-
-    const res2 = await newMusicAPI({
-      limit: 20
-    })
-    this.songList = res2.data.result
-  },
-};
-</script>

@@ -5,10 +5,15 @@ import '@/mobile/flexible'  //自动适应宽度，改变html中的font-size，�
 import '@/assets/reset.css' //初始化字体样式
 import '@/assets/font/iconfont.css'
 import pinia from '@/store/store'
-import { Tabbar, TabbarItem, NavBar, Col, Row, Image as VanImage, Cell, List, Tab, Tabs, Field, CellGroup, Button } from 'vant';
+import vant from 'vant';
+//引入懒加载指令插件
+import { lazyPlugin } from '@/utils/lazyPlugin'
 
 const app = createApp(App)
+
+app.use(lazyPlugin)
 //用于vant的全局组件
-app.use(router, Tabbar, TabbarItem, NavBar, Col, Row, VanImage, Cell, List, Tab, Tabs, Field, CellGroup, Button);
+app.use(router)
+app.use(vant);
 app.use(pinia)
 app.mount('#app')
