@@ -1,21 +1,19 @@
 <template>
   <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false" @load="onLoad">
-    <van-cell v-for="(obj,index) in resultList" center :title="obj.name" :label="obj.ar[0].name" :key="index"
-      @click="playFn(obj.id)">
+    <van-cell v-for="(obj, index) in resultList" center :title="obj.name" :label="obj.ar[0].name" :key="index"
+      @click="playFn(obj.id, resultList)">
       <template #icon>
         <img v-img-lazy="obj.al.picUrl" style="width: 15%;padding-right: 10px;">
       </template>
     </van-cell>
   </van-list>
-  <!-- 无版权或vip歌曲显示 -->
-  <div class="noSongToast">当前歌曲为会员歌曲或无版权歌曲，暂时无法播放~~</div>
 </template>
 
 <script setup>
 import { getSongsData } from "@/utils/getData";
 import { defineProps, ref, watch, onMounted } from "vue";
 import { usePlayId } from '@/store'
-import { getSongCheckAPI } from '@/api'
+import { playFn } from '@/utils/Play/PlayFn'
 
 const props = defineProps({
   type: Number
@@ -40,21 +38,9 @@ const onLoad = async () => {
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
 }
-const playFn = async (id) => {
-  const checkRes = await getSongCheckAPI(id)
-  if (!checkRes.data.success) {
-    let elem = document.querySelector('.noSongToast')
-    elem.classList.add('fadein')
-    setTimeout(() => {
-      elem.classList.remove('fadein')
-    }, 2000)
-    return
-  }
-  store.id = id
-}
 
 watch(() => store.searchVal, async () => {
-  resultList.value=[]
+  resultList.value = []
   page.value = 1
   onLoad()
 })
@@ -69,25 +55,5 @@ onMounted(() => {
 /* 给单元格设置底部边框 */
 .van-cell {
   border-bottom: 1px solid lightgray;
-}
-
-.noSongToast {
-  position: fixed;
-  transform: translateX(-50%);
-  font-size: 20px;
-  padding: 10px 20px;
-  width: 50%;
-  color: white;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  left: 50%;
-  top: 50%;
-  opacity: 0;
-
-  transition: opacity 1s;
-
-  &.fadein {
-    opacity: 1;
-  }
 }
 </style>

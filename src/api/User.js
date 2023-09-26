@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 // 获取用户登录状态
 export const getUserStatus = () => request({
-  url: '/login/status',
+  url: `/login/status?timestamp=${Date.now()}`,
   method: "GET"
 })
 

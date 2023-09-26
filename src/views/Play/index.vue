@@ -51,30 +51,22 @@
       <div class="after iconfont icon-xiangyouzhankai" @click="changeSongs(2)"></div>
       <div class="random iconfont icon-24gl-shuffle" @click="playRepOrRam(2)"></div>
     </div>
-    <div class="mask" @click="closeAddplaylist" v-if="PlayList.length">
-      <div class="addplaylistMsg">收藏到歌单</div>
-      <van-list class="addplaylist">
-        <van-cell v-for="(obj, index) in PlayList" center :title="obj.name" @click="addToList(obj.id, id)"
-          :label="`${obj.trackCount}首`" :key="index">
-          <template #icon>
-            <img v-img-lazy="obj.coverImgUrl" style="width: 15%;padding-right: 10px;">
-          </template>
-        </van-cell>
-      </van-list>
-    </div>
-    <showToast ref="toast"></showToast>
+    <!-- 收藏到歌单 -->
+    <MoreFun :PlayList="PlayList" :id="id" @closeAddplaylist="closeAddplaylist"></MoreFun>
+    <van-action-sheet cancel-text="取消" v-model:show="showMore" :actions="actions" @select="onSelect" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
-import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI, addSongToListAPI } from '@/api'
+import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI } from '@/api'
 import { usePlayId } from '@/store'
 import { trans_formatLyr, _formatLyr } from '@/utils/formatlyric'
+import { useRouter } from 'vue-router'
 
 const playState = ref(false)  // 音乐播放状态(true播放, false暂停)
+const router = useRouter()
 const id = ref(0) // 音乐id
-const toast = ref(null)
 const songInfo = ref({})  // 歌曲信息
 const lyric = ref({}) // 歌词对象
 const playTime = ref(0) //记录当前播放的时间
@@ -86,6 +78,23 @@ const songUrl = ref('') //存放歌曲url
 const toggleIndex = ref(0)  //切换歌曲时的歌曲索引
 const isLike = ref(false)
 const PlayList = ref([])  //保存用户收藏的歌单，用于添加歌曲至歌单
+const showMore = ref(false);
+const actions = [
+  { name: '查看专辑', index: 1 },
+  { name: '删除', index: 2 }
+];
+
+const onSelect = async (item) => {
+  if (item.index == 1) {  //查看专辑
+    store.albumId = songInfo.value.al.id
+    router.push({
+      path: '/layout/albumDetail'
+    })
+  } else if (item.index == 2) { //删除歌曲
+    console.log(2);
+  }
+  showMore.value = false;
+};
 
 const needleDeg = computed(() => {
   return playState.value ? '-7deg' : '-38deg'
@@ -95,17 +104,7 @@ const closeAddplaylist = () => {
   PlayList.value = []
 }
 
-//添加歌曲到歌单，pid为歌单id，id为歌曲id
-const addToList = async (pid, id) => {
-  let res = await addSongToListAPI(pid, id)
-  if (res.data.body.code != 200) {
-    toast.value.trigger(res.data.body.message, 2000);
-    return
-  }
-  toast.value.trigger('已收藏到歌单', 2000);
-}
-
-//index值为0代表喜欢按钮，2是添加歌曲，3是评论，4更多操作
+//点击右侧更多按钮,index值为0代表喜欢按钮，2是添加歌曲，3是评论，4更多操作
 const panelFun = async (index) => {
   if (index == 0) {
     if (isLike.value) {
@@ -121,6 +120,14 @@ const panelFun = async (index) => {
     let res = await getUserPlayListAPI(store.uid)
     //过滤出是用户创建的歌单而不是所有歌单
     PlayList.value = res.data.playlist.filter(obj => !obj.subscribed)
+  }
+  if (index == 2) { //前往歌曲评论
+    router.push({
+      path: '/layout/Comment'
+    })
+  }
+  if (index == 3) {
+    showMore.value = true
   }
 }
 
@@ -386,35 +393,7 @@ audio {
     filter: blur(20px);
   }
 
-  .mask {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* 灰色半透明背景 */
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 30;
 
-    .addplaylistMsg {
-      width: 80%;
-      background-color: white;
-      text-align: center;
-      font-size: 18px;
-      box-sizing: border-box;
-      padding: 10px;
-    }
-
-    .addplaylist {
-      width: 80%;
-      height: 50%;
-      overflow: scroll;
-    }
-  }
 }
 
 .song-bg::before {
@@ -545,7 +524,6 @@ audio {
 
     &.active {
       color: rgb(250, 94, 94);
-      font-weight: bold;
     }
   }
 
@@ -567,7 +545,6 @@ audio {
 
     &.active {
       color: rgb(250, 94, 94);
-      font-weight: bold;
     }
   }
 }

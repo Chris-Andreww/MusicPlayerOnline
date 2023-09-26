@@ -6,6 +6,7 @@ import User from '@/views/User'
 import Login from '@/views/Login'
 import SearchList from '@/views/SearchList/index.vue'
 import { albumDetail, PlayListDetail, djRadioDetail } from '@/views/Detail'
+import Comment from '@/views/comments'
 
 const routes = [
   {
@@ -79,6 +80,18 @@ const routes = [
         component: PlayListDetail,
         meta: {
           title: "歌单详情"
+        }
+      }, {
+        path: 'albumDetail',
+        component: albumDetail,
+        meta: {
+          title: "专辑详情"
+        }
+      }, {
+        path: 'Comment',
+        component: Comment,
+        meta: {
+          title: "评论"
         }
       }
     ]

@@ -14,37 +14,83 @@
     <div class="songsList">
       <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad"
         :immediate-check="false">
-        <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.ar[0].name" :key="obj.id"
-          @click="playFn(obj.id)">
+        <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.ar[0].name" :key="index"
+          @click="playFn(obj.id, songsInfo)">
           <template #icon>
             <div class="container">
+              <p style="color: #969799;padding: 0 10px;">{{ index + 1 }}</p>
               <img v-img-lazy="obj?.al.picUrl">
             </div>
           </template>
           <template #right-icon>
-            <p style="color: #969799;">{{ index + 1 }}</p>
+            <div @click.stop="selectMore(obj.id)" class="iconfont icon-gengduo" style="padding: 15px 5px;"></div>
           </template>
         </van-cell>
       </van-list>
     </div>
-    <!-- 无版权或vip歌曲显示 -->
-    <div class="noSongToast">当前歌曲为会员歌曲，只能试听30秒~~</div>
+    <!-- 收藏到歌单 -->
+    <MoreFun :id="id" :PlayList="PlayList" @closeAddplaylist="closeAddplaylist"></MoreFun>
+    <van-action-sheet cancel-text="取消" v-model:show="showMore" :actions="actions" @select="onSelect" />
   </div>
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getSongCheckAPI, getPlayListDetailAPI } from '@/api'
+import { getPlayListDetailAPI, getUserPlayListAPI, delSongToListAPI } from '@/api'
 import { usePlayId } from "@/store"
 import { getPlayListTrack } from "@/utils/getData";
-
+import { showConfirmDialog, showToast } from 'vant';
+import 'vant/lib/index.css'
+import { playFn } from '@/utils/Play/PlayFn'
 const store = usePlayId()
 
+const id = ref(0) //记录当前点击的歌曲id
 const loading = ref(false) // 加载中 (状态) - 只有为false, 才能触底后自动触发onload方法
 const finished = ref(false) // 未加载全部 (如果设置为true, 底部就不会再次执行onload, 代表全部加载完成)
 const page = ref(1) // 当前搜索结果的页码
 const playlist = ref({})
 const songsInfo = ref([])
 const playId = ref('')
+const showMore = ref(false);
+const PlayList = ref([])  //保存用户收藏的歌单，用于添加歌曲至歌单
+const actions = [
+  { name: '收藏到歌单', index: 1 },
+  { name: '删除', index: 2 }
+];
+
+const selectMore = (selectId) => {
+  showMore.value = true
+  id.value = selectId
+}
+
+const closeAddplaylist = () => {
+  PlayList.value = []
+}
+
+const onSelect = async (item) => {
+  if (item.index == 1) {  //添加歌曲
+    let res = await getUserPlayListAPI(store.uid)
+    //过滤出是用户创建的歌单而不是所有歌单
+    PlayList.value = res.data.playlist.filter(obj => !obj.subscribed)
+  } else if (item.index == 2) { //删除歌曲
+    showConfirmDialog({ //确认删除弹窗
+      title: '注意',
+      message:
+        '确定将所选音乐从歌单中删除？',
+      confirmButtonColor: '#f10f0f'
+    }).then(async () => {
+      let pid = playlist.value.id
+      let res = await delSongToListAPI(pid, id.value) //删除歌单中的歌曲
+      if (res.data.message) {
+        showToast(res.data.message)
+        return
+      }
+      showToast('删除成功')
+      resetData()
+      getData()  //重新加载数据
+    }).catch(() => { })
+  }
+  showMore.value = false;
+};
 
 //获取歌单详情
 const getData = async () => {
@@ -73,26 +119,14 @@ const onLoad = async () => {
   page.value++
 }
 
-const playFn = async (id) => {
-  const checkRes = await getSongCheckAPI(id)
-  if (!checkRes.data.success) {
-    let elem = document.querySelector('.noSongToast')
-    elem.classList.add('fadein')
-    setTimeout(() => {
-      elem.classList.remove('fadein')
-    }, 2000)
-  }
-  if (store.id == id) {  //如果点击的歌曲和当前正在播放的歌曲相同，则显示播放页
-    store.showSlideBar = true
-    return
-  }
-  store.id = id
-}
-
-watch(() => store.playListId, () => {
+const resetData = () => {
   playlist.value = {}
   songsInfo.value = []
   page.value = 1
+}
+
+watch(() => store.playListId, () => {
+  resetData()
   playId.value = store.playListId
   getData()
 })
@@ -176,6 +210,9 @@ onMounted(() => {
     border-bottom: 1px solid lightgray;
 
     .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 50px;
       height: 50px;
       margin-right: 10px;
@@ -184,29 +221,9 @@ onMounted(() => {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        padding-right: 10px;
+        margin-right: 20px;
       }
     }
-  }
-}
-
-.noSongToast {
-  position: fixed;
-  transform: translateX(-50%);
-  font-size: 20px;
-  padding: 10px 20px;
-  width: 50%;
-  color: white;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  left: 50%;
-  top: 50%;
-  opacity: 0;
-
-  transition: opacity 1s;
-
-  &.fadein {
-    opacity: 1;
   }
 }
 </style>

@@ -11,3 +11,9 @@ export const addSongToList = (pid, id) => request({
   url: `/playlist/tracks?op=add&pid=${pid}&tracks=${id}&timestamp=${Date.now()}`,
   method: "GET"
 })
+
+// 从歌单删除歌曲
+export const delSongToList = (pid, id) => request({
+  url: `/playlist/tracks?op=del&pid=${pid}&tracks=${id}&timestamp=${Date.now()}`,
+  method: "GET"
+})

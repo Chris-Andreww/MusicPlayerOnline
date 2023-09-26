@@ -14,7 +14,7 @@
     <div class="songsList">
       <van-list>
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj.name" :label="obj.ar[0].name" :key="index"
-          @click="playFn(obj.id)">
+          @click="playFn(obj.id, songsInfo)">
           <template #icon>
             <div class="container">
               <img v-img-lazy="obj?.al.picUrl">
@@ -32,9 +32,10 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAlbumByIdAPI, getSongCheckAPI } from '@/api'
+import { getAlbumByIdAPI } from '@/api'
 import { formatDate } from '@/utils/formatTime'
 import { usePlayId } from "@/store"
+import { playFn } from '@/utils/Play/PlayFn'
 
 const store = usePlayId()
 
@@ -50,18 +51,6 @@ const getData = async () => {
   store.curPlayList = songsInfo.value.map(val => {
     return val.id
   })
-}
-
-const playFn = async (id) => {
-  const checkRes = await getSongCheckAPI(id)
-  if (!checkRes.data.success) {
-    let elem = document.querySelector('.noSongToast')
-    elem.classList.add('fadein')
-    setTimeout(() => {
-      elem.classList.remove('fadein')
-    }, 2000)
-  }
-  store.id = id
 }
 
 watch(() => store.albumId, (id) => {

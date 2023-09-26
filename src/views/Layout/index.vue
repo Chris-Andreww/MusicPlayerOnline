@@ -13,15 +13,17 @@
           <component :is="Component"></component>
         </keep-alive>
       </router-view>
-      <van-floating-bubble :offset="offset" axis="xy" icon="chat" magnetic="x" @click="showSlider"
-        style="width: 60px;height: 60px;">
-        <div class="playrotate iconfont icon-bofang" style="font-size:25px;padding-left: 5px;"></div>
-      </van-floating-bubble>
     </div>
-    <van-tabbar route>
-      <van-tabbar-item replace to="/layout/home" icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item replace to="/layout/search" icon="search">搜索</van-tabbar-item>
-      <van-tabbar-item replace to="/layout/user" icon="user-circle-o">用户</van-tabbar-item>
+    <van-tabbar route z-index="30">
+      <van-tabbar-item replace to="/layout/home" icon="home-o" @click="navClick(0)">首页</van-tabbar-item>
+      <van-tabbar-item @click="navClick(1)">
+        <template #icon>
+          <div class="playrotate iconfont icon-bofang" :class="{ active: isSlider }"></div>
+        </template>
+        播放页
+      </van-tabbar-item>
+      <van-tabbar-item replace to="/layout/search" icon="search" @click="navClick(2)">搜索</van-tabbar-item>
+      <van-tabbar-item replace to="/layout/user" icon="user-circle-o" @click="navClick(3)">用户</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
@@ -37,8 +39,16 @@ const isSlider = ref(false);
 const route = useRoute()
 const router = useRouter()
 const store = usePlayId()
-const offset = ref({ x: 20, y: 300 })
 const showNavBack = ref(false)
+
+//传入1代表可以控制侧边栏开关，传入2代表只能控制关闭
+const navClick = (index) => {
+  if (index == 1) {
+    showSlider()
+  } else if (isSlider.value) {
+    showSlider()
+  }
+}
 
 const showSlider = () => {
   let doc = document.querySelector('.slidebar')
@@ -63,6 +73,7 @@ const closePage = () => {
 }
 
 watch(route, (to) => {
+  navClick(2)
   if (to.fullPath == '/layout/search' || to.fullPath == '/layout/home' || to.fullPath == '/layout/user') {
     showNavBack.value = false
     store.searchVal = ''
@@ -86,7 +97,7 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 /* 中间内容区域 - 容器样式(留好上下导航所占位置) */
 .main {
   padding-top: 46px;
@@ -110,8 +121,13 @@ onMounted(() => {
   }
 }
 
-/* 定义悬浮按钮主题色 */
-:root {
-  --van-floating-bubble-background: #6f7070bd;
+.playrotate {
+  padding-left: 5px;
+  transform: rotateZ(0deg);
+  transition: transform 0.5s;
+
+  &.active {
+    transform: rotateZ(180deg);
+  }
 }
 </style>

@@ -1,4 +1,4 @@
-import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI, getdjRadioTrackAPI } from "@/api";
+import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI, getdjRadioTrackAPI,getCommentsAPI } from "@/api";
 
 /**
  * 
@@ -52,6 +52,20 @@ export const getPlayListTrack = async (id, page) => {
 export const getdjRadioTrack = async (rid, page) => {
   return await getdjRadioTrackAPI({
     rid,
+    limit: 20,
+    offset: (page - 1) * 20
+  });
+}
+
+/**
+ * 
+ * @param id 歌曲id 
+ * @param page 评论翻页 
+ * @returns 
+ */
+export const getComments = async (id, page) => {
+  return await getCommentsAPI({
+    id,
     limit: 20,
     offset: (page - 1) * 20
   });

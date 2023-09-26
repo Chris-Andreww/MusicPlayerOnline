@@ -22,7 +22,6 @@
       <van-button class="button" round @click="LoginWithQR"
         color="linear-gradient(to right, #ff6034, #ee0a24)">扫码登录</van-button>
     </div>
-    <showToast ref="toast"></showToast>
   </div>
 </template>
 
@@ -31,12 +30,12 @@ import { ref } from 'vue';
 import { UserLoginAPI, makeQRCodekeyAPI, makeQRCodeAPI, checkQRCodeAPI } from '@/api';
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router'
+import { showToast } from 'vant';
 
 const phoneNumber = ref('')
 const password = ref('')
 const router = useRouter()
 const store = usePlayId()
-const toast = ref(null)
 const qrImgUrl = ref('')
 const notice = ref('等待扫码')
 const checkInt = ref(null)  //用来循环检测二维码是否扫描，如果取消，则删除该定时器
@@ -54,12 +53,12 @@ const LoginWithPass = async (phoneNumber, password) => {
     return
   }
   if (!phoneNumber || !password) {
-    toast.value.trigger('手机号或密码不能为空！', 2000);
+    showToast('手机号或密码不能为空！')
     return
   }
   let res = await UserLoginAPI(phoneNumber, password)
   if (res.data.code != 200) {
-    toast.value.trigger('账号或密码错误！', 2000);
+    showToast('账号或密码错误！')
     return
   }
   store.uid = res.data.account.id
@@ -89,7 +88,7 @@ const LoginWithQR = async () => {
       notice.value = res.data.message
     }
     if (res.data.code == 803) {
-      toast.value.trigger('登录成功！即将返回', 2000);
+      showToast('登录成功！即将返回')
       clearInterval(checkInt.value)
       store.uid = res.data.code //用来触发用户页的刷新操作
       setTimeout(() => {

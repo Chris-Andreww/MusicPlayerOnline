@@ -10,7 +10,7 @@
     <p class="title">每日推荐</p>
     <div class="recSongs">
       <van-list>
-        <van-cell v-for="(obj, index) in recSongsList" center :key="index" @click="playFn(obj.id)">
+        <van-cell v-for="(obj, index) in recSongsList" center :key="index" @click="playFn(obj.id, recSongsList)">
           <template #icon>
             <img v-img-lazy="obj.al.picUrl" style="width: 18%;padding-right: 10px;">
           </template>
@@ -32,29 +32,12 @@ import { GetAnonimousAPI, recPlayListAPI, recsongsAPI } from '@/api';
 import { onMounted, ref } from 'vue';
 import { usePlayId } from '@/store'
 import { useRouter } from 'vue-router'
-import { getSongCheckAPI } from '@/api'
+import { playFn } from '@/utils/Play/PlayFn'
 
 const recPlayList = ref([])
 const recSongsList = ref([])
 const store = usePlayId()
 const router = useRouter()
-
-const playFn = async (id) => {
-  const checkRes = await getSongCheckAPI(id)
-  if (!checkRes.data.success) {
-    let elem = document.querySelector('.noSongToast')
-    elem.classList.add('fadein')
-    setTimeout(() => {
-      elem.classList.remove('fadein')
-    }, 2000)
-    return
-  }
-  store.id = id
-  //用于歌曲切换而创建的列表
-  store.curPlayList = recSongsList.value.map(val => {
-    return val.id
-  })
-}
 
 const toDetail = (id) => {
   store.playListId = id
@@ -64,11 +47,17 @@ const toDetail = (id) => {
 }
 
 onMounted(async () => {
-  await GetAnonimousAPI()
   let res = await recPlayListAPI()
   let res2 = await recsongsAPI()
-  recPlayList.value = res.data.recommend
-  recSongsList.value = res2.data.data.dailySongs
+  //判断当前用户是否登录，如果没登录就用匿名账号
+  if (document.cookie && store.uid) {
+    recPlayList.value = res.data.recommend
+    recSongsList.value = res2.data.data.dailySongs
+  } else {
+    await GetAnonimousAPI()
+    recPlayList.value = res.data.recommend
+    recSongsList.value = res2.data.data.dailySongs
+  }
 })
 </script>
 

@@ -21,5 +21,5 @@ export const formatDate = (timestamp) => {
   // const seconds = ("0" + date.getSeconds()).slice(-2);
 
   // 返回格式化后的日期时间字符串，使用模板字符串的形式拼接各个部分
-  return `${year}.${month}.${day}`;
+  return `${year}年${month}月${day}日`;
 }

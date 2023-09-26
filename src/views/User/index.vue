@@ -19,10 +19,10 @@
             </template>
           </van-cell>
         </van-list>
-        <!-- 用户收藏的歌单信息 -->
-        <userPlayList :PlayList="filterLikePlayList" :message="'收藏的歌单'"></userPlayList>
         <!-- 用户创建的歌单信息 -->
         <userPlayList :PlayList="filterCreatePlayList" :message="'创建的歌单'"></userPlayList>
+        <!-- 用户收藏的歌单信息 -->
+        <userPlayList :PlayList="filterLikePlayList" :message="'收藏的歌单'"></userPlayList>
       </van-tab>
       <van-tab title="动态">动态</van-tab>
     </van-tabs>
@@ -81,7 +81,7 @@ const getData = async () => {
   if (res.data.data.code != 200) { //如果当前用户未登录
     return
   }
-  let uid = res.data.data.profile.userId
+  let uid = res.data.data.profile?.userId
   store.uid = uid
   //获取当前账号的信息（关注、粉丝数）
   let userdetail = await getUserDetailAPI(uid)
@@ -99,7 +99,7 @@ const getData = async () => {
 }
 
 onMounted(async () => {
-  if (store.uid) {
+  if (document.cookie) {
     getData()
     isLogin.value = true
     return
