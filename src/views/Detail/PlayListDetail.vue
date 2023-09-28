@@ -41,6 +41,8 @@ import { getPlayListTrack } from "@/utils/getData";
 import { showConfirmDialog, showToast } from 'vant';
 import 'vant/lib/index.css'
 import { playFn } from '@/utils/Play/PlayFn'
+import { useRouter } from 'vue-router';
+
 const store = usePlayId()
 
 const id = ref(0) //记录当前点击的歌曲id
@@ -52,9 +54,11 @@ const songsInfo = ref([])
 const playId = ref('')
 const showMore = ref(false);
 const PlayList = ref([])  //保存用户收藏的歌单，用于添加歌曲至歌单
+const router = useRouter()
 const actions = [
   { name: '收藏到歌单', index: 1 },
-  { name: '删除', index: 2 }
+  { name: '查看评论', index: 2 },
+  { name: '删除', index: 3 }
 ];
 
 const selectMore = (selectId) => {
@@ -71,7 +75,14 @@ const onSelect = async (item) => {
     let res = await getUserPlayListAPI(store.uid)
     //过滤出是用户创建的歌单而不是所有歌单
     PlayList.value = res.data.playlist.filter(obj => !obj.subscribed)
-  } else if (item.index == 2) { //删除歌曲
+  } else if (item.index == 2) { //查看评论
+    router.push({
+      path: '/layout/Comment',
+      query: {
+        id: id.value  //歌曲id
+      }
+    })
+  } else if (item.index == 3) { //删除歌曲
     showConfirmDialog({ //确认删除弹窗
       title: '注意',
       message:
@@ -110,11 +121,6 @@ const onLoad = async () => {
     return;
   }
   songsInfo.value = [...songsInfo.value, ...res.data.songs];
-  //用于歌曲切换而创建的列表
-  store.curPlayList = songsInfo.value.map(val => {
-    return val.id
-  })
-
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
 }

@@ -15,7 +15,7 @@
       <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false"
         @load="onLoad">
         <van-cell v-for="(obj, index) in songsInfo" center :title="obj?.name" :label="obj?.dj.brand" :key="index"
-          @click="playFn(obj.mainSong.id)">
+          @click="playFn(obj.mainSong.id,songsInfo)">
           <template #icon>
             <div class="container">
               <img v-img-lazy="obj.coverUrl">
@@ -34,6 +34,7 @@ import { ref, onMounted, watch } from 'vue'
 import { getdjRadioDetailAPI } from '@/api'
 import { usePlayId } from "@/store"
 import { getdjRadioTrack } from "@/utils/getData";
+import { playFn } from '@/utils/Play/PlayFn'
 
 const store = usePlayId()
 
@@ -62,16 +63,8 @@ const onLoad = async () => {
     return;
   }
   songsInfo.value = [...songsInfo.value, ...res.data.programs];
-  //用于歌曲切换而创建的列表
-  store.curPlayList = songsInfo.value.map(val => {
-    return val.id
-  })
   loading.value = false; // 数据加载完毕-保证下一次还能触发onload
   page.value++
-}
-
-const playFn = async (id) => {
-  store.id = id
 }
 
 watch(() => store.djRadioId, () => {

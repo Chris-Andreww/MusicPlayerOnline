@@ -5,7 +5,7 @@ import { getSongById, getLyricById, getSongCheck, getSongUrl } from './Play'
 import { getAlbumById, getPlayListTrack, getPlayListDetail, getdjRadioDetail, getdjRadioTrack } from './Detail'
 import { getUserStatus, UserLogin, getUserDetail, getUserPlayList, getUserLikeList, makeQRCodekey, makeQRCode, checkQRCode, GetAnonimous } from './User'
 import { addLikeSong, addSongToList, delSongToList } from './PanelFun'
-import { getComments } from './comments'
+import { getComments, getFloorComments } from './comments'
 
 export const recPlayListAPI = recPlayList // 请求推荐歌单的方法导出
 export const recsongsAPI = recsongs// 首页 - 推荐最新音乐
@@ -42,3 +42,4 @@ export const addSongToListAPI = addSongToList // 添加喜欢至歌单
 export const delSongToListAPI = delSongToList // 从歌单删除歌曲
 
 export const getCommentsAPI = getComments // 获取歌曲评论
+export const getFloorCommentsAPI = getFloorComments //获取楼层评论

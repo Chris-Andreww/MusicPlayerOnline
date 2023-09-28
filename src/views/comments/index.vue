@@ -4,17 +4,18 @@
       <div v-show="true" @click="closePage" class="navback iconfont icon-xiangzuoshouqi"></div>
     </template>
   </van-nav-bar>
-  <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+  <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" :immediate-check="false" @load="onLoad">
     <van-cell v-for="(obj, index) in resultList" center :title="obj.user.nickname" :key="index">
       <template #icon>
         <div class="avatar">
-          <img v-img-lazy="obj.user.avatarUrl" style="width: 100%;padding-right: 10px">
+          <img v-img-lazy="obj.user.avatarUrl">
         </div>
       </template>
       <template #title>
         <div class="title">
           <p>{{ obj.user.nickname }}</p>
           <p>{{ formatDate(obj.time) }}</p>
+          <p class="iconfont icon-dianzan">{{ obj.likedCount }}</p>
         </div>
       </template>
       <template #label>
@@ -29,17 +30,17 @@
 <script setup>
 import { getComments } from "@/utils/getData";
 import { ref, watch } from "vue";
-import { usePlayId } from '@/store'
 import { formatDate } from '@/utils/formatTime'
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
+const id = ref(0) //歌曲id
 const totalCommentNum = ref(0)
 const resultList = ref([]) // 评论内容
 const loading = ref(false) // 加载中 (状态) - 只有为false, 才能触底后自动触发onload方法
 const finished = ref(false) // 未加载全部 (如果设置为true, 底部就不会再次执行onload, 代表全部加载完成)
 const page = ref(1) // 当前搜索结果的页码
-const store = usePlayId()
 const router = useRouter()
+const route = useRoute()
 
 const closePage = () => {
   router.back()
@@ -48,7 +49,8 @@ const closePage = () => {
 // 触底事件
 const onLoad = async () => {
   loading.value = true;
-  const res = await getComments(store.id, page.value)
+  const res = await getComments(id.value, page.value)
+  //const res2=await getfloorComments()
   if (!res.data.more) { // 没有更多数据了
     finished.value = true; // 全部加载完成(list不会在触发onload方法)
     loading.value = false; // 本次加载完成
@@ -65,7 +67,11 @@ const onLoad = async () => {
   page.value++
 }
 
-watch(() => store.id, () => {
+watch(() => route.query.id, () => {
+  if (route.query.id == undefined) {
+    return
+  }
+  id.value = route.query.id
   page.value = 1
   onLoad()
 })
@@ -76,21 +82,36 @@ watch(() => store.id, () => {
 }
 
 .avatar {
+  position: absolute;
+  top: 17px;
   height: 100%;
   width: 30px;
   height: 30px;
-  top: 0;
   border-radius: 50%;
   margin-right: 10px;
   overflow: hidden;
+
+  img {
+    position: absolute;
+    width: 100%;
+    padding-right: 10px;
+  }
 }
 
 .title {
+  margin-left: 10%;
   font-size: 13px;
   color: #666666;
 
   p {
     height: 20px;
+
+    &:nth-child(3) {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 13px;
+    }
   }
 }
 

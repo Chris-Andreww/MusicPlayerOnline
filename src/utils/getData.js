@@ -1,4 +1,4 @@
-import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI, getdjRadioTrackAPI,getCommentsAPI } from "@/api";
+import { searchResultAPI, searchSuggestAPI, getPlayListTrackAPI, getdjRadioTrackAPI, getCommentsAPI, getFloorCommentsAPI } from "@/api";
 
 /**
  * 
@@ -66,6 +66,24 @@ export const getdjRadioTrack = async (rid, page) => {
 export const getComments = async (id, page) => {
   return await getCommentsAPI({
     id,
+    limit: 20,
+    offset: (page - 1) * 20
+  });
+}
+
+/**
+ * 
+ * @param {楼层评论id} parentCommentId 
+ * @param {资源id} id 
+ * @param {资源类型，0歌曲，2歌单，3专辑，4电台节目，7电台} type 
+ * @param {页数} page 
+ * @returns 
+ */
+export const getfloorComments = async (parentCommentId, id, type, page) => {
+  return await getFloorCommentsAPI({
+    parentCommentId,
+    id,
+    type,
     limit: 20,
     offset: (page - 1) * 20
   });

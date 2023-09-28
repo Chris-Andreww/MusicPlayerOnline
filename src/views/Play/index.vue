@@ -59,10 +59,10 @@
 
 <script setup>
 import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
-import { getSongByIdAPI, getLyricByIdAPI, getSongUrlAPI, addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI } from '@/api'
+import { addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI } from '@/api'
 import { usePlayId } from '@/store'
-import { trans_formatLyr, _formatLyr } from '@/utils/formatlyric'
 import { useRouter } from 'vue-router'
+import { PlayListGetSong } from './Fun'
 
 const playState = ref(false)  // 音乐播放状态(true播放, false暂停)
 const router = useRouter()
@@ -123,7 +123,10 @@ const panelFun = async (index) => {
   }
   if (index == 2) { //前往歌曲评论
     router.push({
-      path: '/layout/Comment'
+      path: '/layout/Comment',
+      query: {
+        id: id.value  //歌曲id
+      }
     })
   }
   if (index == 3) {
@@ -221,30 +224,17 @@ const recoveryConfig = () => {
 }
 
 const getSong = async () => {
-  const res = await getSongByIdAPI(id.value)
-  const url = await getSongUrlAPI(id.value)
-  songInfo.value = res.data.songs[0]
-  songUrl.value = url.data.data[0].url
-
-  lyric.value = {}
-  keyArr.value = {}
-  const lyrContent = await getLyricByIdAPI(id.value)
-  if (lyrContent.data.tlyric?.lyric) { //如果歌词有翻译
-    let translyricStr = lyrContent.data.tlyric.lyric
-    let lyricStr = lyrContent.data.lrc.lyric
-    //解析带翻译的歌词
-    lyric.value = trans_formatLyr(lyricStr, translyricStr, keyArr.value);
-  } else {
-    let lyricStr = lyrContent.data.lrc.lyric
-    //解析不带翻译的歌词
-    lyric.value = _formatLyr(lyricStr, keyArr.value)
-  }
-  if (!Object.keys(lyric.value).length) { //如果遍历的歌词对象中没有内容，则没有歌词
-    lyric.value[0] = '暂无歌词信息'
-  }
-  getUserLikeList() //获取用户喜欢的列表
+  //获取歌曲信息
+  let res = await PlayListGetSong(id.value)
+  songInfo.value = res.songInfo
+  songUrl.value = res.songUrl
+  lyric.value = res.lyric
+  keyArr.value = res.keyArr
+  getUserLikeList() //获取用户喜欢的列表，用来渲染是否显示喜欢按钮
   playState.value = false //设置false，方便切歌时自动播放
-  audioStart()  //自动播放音乐
+  setTimeout(() => {
+    audioStart()  //自动播放音乐
+  }, 500)
 }
 
 const audioStart = () => {
