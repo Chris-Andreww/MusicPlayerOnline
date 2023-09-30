@@ -47,14 +47,16 @@ const toDetail = (id) => {
 }
 
 onMounted(async () => {
-  let res = await recPlayListAPI()
-  let res2 = await recsongsAPI()
   //判断当前用户是否登录，如果没登录就用匿名账号
   if (document.cookie && store.uid) {
+    let res = await recPlayListAPI()
+    let res2 = await recsongsAPI()
     recPlayList.value = res.data.recommend
     recSongsList.value = res2.data.data.dailySongs
   } else {
     await GetAnonimousAPI()
+    let res = await recPlayListAPI()
+    let res2 = await recsongsAPI()
     recPlayList.value = res.data.recommend
     recSongsList.value = res2.data.data.dailySongs
   }
@@ -79,7 +81,6 @@ onMounted(async () => {
 
   .recList {
     height: 180px;
-    width: 100%;
     display: flex;
     overflow-x: scroll;
 

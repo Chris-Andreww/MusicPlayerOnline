@@ -10,11 +10,35 @@
           <div>{{ obj.keyword }}</div>
         </div>
       </div>
-      <!-- 热搜关键词容器 -->
-      <div class="hot_name_wrap" v-show="!value">
-        <span class="hot_item" v-for="(obj, index) in hotArr" @click="clickItem(obj.first)" :key="index">{{ obj.first
-        }}</span>
+      <!-- 搜索历史 -->
+      <div v-show="searchHistory.length && !value" style="display: flex;justify-content: space-between;align-items: center;">
+        <p style="font-size: 18px;margin: 10px;">历史记录</p>
+        <div class="iconfont icon-lajixiang" style="padding: 10px;" @click="delHis"></div>
       </div>
+      <div class="searchHis_Container" v-show="searchHistory.length && !value">
+        <span class="searchHis_item" v-for="(obj, index) in searchHistory" @click="clickItem(obj)" :key="index">
+          {{ obj }}
+        </span>
+      </div>
+      <!-- 热搜关键词 -->
+      <p style="font-size: 18px;margin: 10px;" v-show="!value">热搜榜</p>
+      <van-list v-show="!value">
+        <van-cell v-for="(obj, index) in hotArr" center :label="obj.content" :key="index"
+          @click="clickItem(obj.searchWord)">
+          <template #icon>
+            <div style="margin-right: 15px;font-size: 16px;">
+              {{ index + 1 }}
+            </div>
+          </template>
+          <template #title>
+            {{ obj.searchWord }}
+            <img v-if="obj.iconUrl" :src="obj.iconUrl" style="height: 1em;">
+          </template>
+          <template #right-icon>
+            <p style="color: #b4b4b4;">{{ obj.score }}</p>
+          </template>
+        </van-cell>
+      </van-list>
     </div>
     <!-- 搜索结果 -->
     <router-view v-slot="{ Component }" v-show="value">
@@ -30,6 +54,7 @@ import { getSearchSuggest } from '@/utils/getData'
 import { usePlayId } from '@/store'
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { showConfirmDialog, showToast } from 'vant';
 
 const SuggestVal = ref([])  //存放搜索建议
 const value = ref('')  //最终的搜索内容
@@ -39,10 +64,12 @@ const showSuggest = ref(false)
 const timer = ref(null)
 const store = usePlayId()
 const router = useRouter()
+const searchHistory = ref([])
 
 onMounted(async () => {
+  searchHistory.value = JSON.parse(localStorage.getItem('searchHistory')) ?? []
   const res = await hotSearchAPI();
-  hotArr.value = res.data.result.hots;
+  hotArr.value = res.data.data;
 });
 
 const inputFn = (inputVal) => {
@@ -67,6 +94,7 @@ const clickItem = (val) => {
     path: '/layout/search/searchlist'
   })
   store.searchVal = value.value
+  toLocalStorage(val)
 };
 
 const search = () => {
@@ -81,7 +109,34 @@ const search = () => {
     path: '/layout/search/searchlist'
   })
   store.searchVal = value.value
+  toLocalStorage(value.value)
 };
+
+//本地存储搜索历史方法，val为存储的文本
+const toLocalStorage = (val) => {
+  let curArr = JSON.parse(localStorage.getItem('searchHistory')) ?? []
+  //用来判断元素是否存在，如果存在，则将其放在第数组一位
+  let isExistArr = curArr.filter(item => {
+    return item !== val
+  })
+  isExistArr.unshift(val)
+  searchHistory.value = isExistArr
+  localStorage.setItem("searchHistory", JSON.stringify(isExistArr));
+}
+
+const delHis = () => {
+  showConfirmDialog({ //确认删除弹窗
+    title: '注意',
+    message:
+      '确定清空全部历史记录？',
+    confirmButtonColor: '#f10f0f'
+  }).then(async () => {
+    searchHistory.value = []
+    value.value = ''
+    localStorage.setItem("searchHistory", '[]');
+    showToast('删除成功')
+  }).catch(() => { })
+}
 
 //如果输入框为空，就显示热搜
 watch(() => store.searchVal, (newv) => {
@@ -114,25 +169,27 @@ watch(() => store.searchVal, (newv) => {
   }
 }
 
-/* 热搜词_容器 */
-.hot_name_wrap {
-  margin: 0.266667rem 0;
-  padding: 15px;
+/* 搜索历史_容器 */
+.searchHis_Container {
+  margin: 5px 0;
+  padding: 10px;
+  display: flex;
+  overflow-x: scroll;
 }
 
-/* 热搜词_样式 */
-.hot_item {
-  display: inline-block;
-  height: 0.853333rem;
-  margin-right: 0.213333rem;
-  margin-bottom: 0.213333rem;
-  padding: 0 0.373333rem;
-  font-size: 0.373333rem;
-  line-height: 0.853333rem;
+/* 搜索历史_样式 */
+.searchHis_item {
+  white-space: nowrap;
+  background-color: #f2f2f2;
+  height: 30px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  padding: 0 15px;
+  font-size: 16px;
+  line-height: 30px;
   color: #333;
   border-color: #d3d4da;
-  border-radius: 0.853333rem;
-  border: 1px solid #d3d4da;
+  border-radius: 50px;
 }
 
 /* 给单元格设置底部边框 */

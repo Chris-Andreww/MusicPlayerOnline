@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 // 热搜关键字
 export const hotSearch = () => request({
-  url: '/search/hot'
+  url: '/search/hot/detail'
 })
 
 // 搜索建议

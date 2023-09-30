@@ -99,7 +99,8 @@ const getData = async () => {
 }
 
 onMounted(async () => {
-  if (document.cookie) {
+  let cookie = document.cookie
+  if (cookie.match(/MUSIC_U/g)) { //如果为null，代表未登录或匿名登录
     getData()
     isLogin.value = true
     return
