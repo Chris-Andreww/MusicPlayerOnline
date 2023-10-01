@@ -40,10 +40,9 @@
       <div class="like iconfont icon-xin" :class="{ 'icon-xin1': isLike }" @click="panelFun(0)"></div>
       <div class="add iconfont icon-xinjian" @click="panelFun(1)"></div>
       <div class="comment iconfont icon-pinglun" @click="panelFun(2)"></div>
-      <div class="gengduo iconfont icon-gengduo" @click="panelFun(3)"></div>
+      <div class="gengduo iconfont icon-tiaoxu" @click="panelFun(3)"></div>
     </div>
-    <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"
-      controlsList="nodownload noplaybackrate"></audio>
+    <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"></audio>
     <!-- 随机顺序暂停播放按钮 -->
     <div class="controller">
       <div class="repeat iconfont icon-24gl-repeat2" @click="playRepOrRam(1)"></div>
