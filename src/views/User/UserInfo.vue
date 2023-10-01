@@ -5,7 +5,8 @@
       <van-tab title="主页">
         <!-- 用户听歌排行和喜欢的歌曲 -->
         <van-list class="userlike">
-          <van-cell center :title="`${userProfile.nickname}的听歌排行`" :label="`累计听歌${userData.listenSongs}首`">
+          <van-cell center :title="`${userProfile.nickname}的听歌排行`" :label="`累计听歌${userData.listenSongs}首`"
+            @click="toHistory">
             <template #icon>
               <div class="bg">
                 <div class="iconfont icon-paixingbang" style="width: 15%;padding-right: 10px;"></div>
@@ -22,7 +23,7 @@
         <!-- 用户创建的歌单信息 -->
         <userPlayList :PlayList="filterCreatePlayList" :message="'创建的歌单'"></userPlayList>
         <!-- 用户收藏的歌单信息 -->
-        <userPlayList :PlayList="filterLikePlayList" :message="'收藏的歌单'"></userPlayList>
+        <UserPlayList :PlayList="filterLikePlayList" :message="'收藏的歌单'"></UserPlayList>
       </van-tab>
       <van-tab title="动态">动态</van-tab>
     </van-tabs>
@@ -40,7 +41,7 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { usePlayId } from "@/store";
 import { useRouter } from 'vue-router'
 import Userinfo from '@/components/userinfo.vue';
-import userPlayList from './userPlayList.vue';
+import { UserPlayList } from '@/views/User';
 
 const userData = ref({})
 const userProfile = ref({})
@@ -55,6 +56,12 @@ const toDetail = (id) => {
   store.playListId = id
   router.push({
     path: '/layout/PlayListDetail'
+  })
+}
+
+const toHistory = () => {
+  router.push({
+    path: '/layout/userplayhistory'
   })
 }
 
@@ -128,11 +135,6 @@ watch(() => store.uid, () => {
       font-size: 30px;
     }
   }
-}
-
-.FavPlaylists {
-  font-size: 20px;
-  padding-left: 20px;
 }
 
 .toLogin {

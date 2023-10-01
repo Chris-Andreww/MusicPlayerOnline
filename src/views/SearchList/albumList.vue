@@ -65,6 +65,7 @@ const onLoad = async () => {
 
 watch(() => store.searchVal, async () => {
   page.value = 1
+  resultList.value = []
   const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.albums === undefined) {
     resultList.value = [];

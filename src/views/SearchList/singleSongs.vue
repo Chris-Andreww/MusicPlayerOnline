@@ -28,6 +28,7 @@ const store = usePlayId()
 // 触底事件
 const onLoad = async () => {
   loading.value = true;
+  resultList.value = []
   const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.songs === undefined) { // 没有更多数据了
     finished.value = true; // 全部加载完成(list不会在触发onload方法)

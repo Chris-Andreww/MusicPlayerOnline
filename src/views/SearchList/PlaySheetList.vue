@@ -58,6 +58,7 @@ const toDetail = (id) => {
 
 watch(() => store.searchVal, async () => {
   page.value = 1
+  resultList.value = []
   const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.playlists === undefined) {
     resultList.value = [];

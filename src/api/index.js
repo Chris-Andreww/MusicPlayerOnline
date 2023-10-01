@@ -3,7 +3,7 @@ import { recPlayList, recsongs } from './Home'
 import { hotSearch, searchSuggest, searchResult } from './Search'
 import { getSongById, getLyricById, getSongCheck, getSongUrl } from './Play'
 import { getAlbumById, getPlayListTrack, getPlayListDetail, getdjRadioDetail, getdjRadioTrack } from './Detail'
-import { getUserStatus, UserLogin, getUserDetail, getUserPlayList, getUserLikeList, makeQRCodekey, makeQRCode, checkQRCode, GetAnonimous } from './User'
+import { getUserStatus, UserLogin, getUserDetail, getUserPlayList, getUserLikeList, makeQRCodekey, makeQRCode, checkQRCode, GetAnonimous,GetPlayHistory } from './User'
 import { addLikeSong, addSongToList, delSongToList } from './PanelFun'
 import { getComments, getFloorComments } from './comments'
 
@@ -32,6 +32,7 @@ export const makeQRCodekeyAPI = makeQRCodekey // 生成key二维码接口
 export const makeQRCodeAPI = makeQRCode // 生成二维码接口
 export const checkQRCodeAPI = checkQRCode // 二维码检测接口
 export const GetAnonimousAPI = GetAnonimous // 获取游客账号
+export const GetPlayHistoryAPI = GetPlayHistory // 获取游客账号
 
 export const getUserDetailAPI = getUserDetail // 用户详情
 export const getUserPlayListAPI = getUserPlayList // 用户歌单

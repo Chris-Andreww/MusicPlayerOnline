@@ -2,10 +2,10 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '@/views/Layout'
 import Home from '@/views/Home'
 import Search from '@/views/Search'
-import User from '@/views/User'
+import { UserInfo, UserPlayHistory } from '@/views/User'
 import Login from '@/views/Login'
 import SearchList from '@/views/SearchList/index.vue'
-import { albumDetail, PlayListDetail, djRadioDetail } from '@/views/Detail'
+import { albumDetail, PlayListDetail, djRadioDetail,UserDetail } from '@/views/Detail'
 import Comment from '@/views/comments'
 
 const routes = [
@@ -63,7 +63,7 @@ const routes = [
       },
       {
         path: 'user',
-        component: User,
+        component: UserInfo,
         meta: {
           title: "个人中心"
         }
@@ -92,6 +92,15 @@ const routes = [
         component: Comment,
         meta: {
           title: "评论"
+        }
+      }, {
+        path: 'userplayhistory',
+        component: UserPlayHistory
+      }, {
+        path: 'userdetail',
+        component: UserDetail,
+        meta: {
+          title: "用户详情"
         }
       }
     ]

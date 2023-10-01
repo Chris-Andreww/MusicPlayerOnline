@@ -44,6 +44,7 @@
     </div>
     <audio controls @ended="toNextSong()" ref="audio" preload="true" :src="songUrl"
       controlsList="nodownload noplaybackrate"></audio>
+    <!-- 随机顺序暂停播放按钮 -->
     <div class="controller">
       <div class="repeat iconfont icon-24gl-repeat2" @click="playRepOrRam(1)"></div>
       <div class="before iconfont icon-xiangzuoshouqi" @click="changeSongs(1)"></div>
@@ -62,7 +63,8 @@ import { ref, onMounted, watch, computed, getCurrentInstance } from 'vue'
 import { addLikeSongAPI, getUserLikeListAPI, getUserPlayListAPI } from '@/api'
 import { usePlayId } from '@/store'
 import { useRouter } from 'vue-router'
-import { PlayListGetSong } from './Fun'
+import { getSongInfo } from './Fun'
+import { downloadFile } from '@/utils/downloadFile'
 
 const playState = ref(false)  // 音乐播放状态(true播放, false暂停)
 const router = useRouter()
@@ -81,7 +83,7 @@ const PlayList = ref([])  //保存用户收藏的歌单，用于添加歌曲至�
 const showMore = ref(false);
 const actions = [
   { name: '查看专辑', index: 1 },
-  { name: '删除', index: 2 }
+  { name: '下载', index: 3 }
 ];
 
 const onSelect = async (item) => {
@@ -90,8 +92,9 @@ const onSelect = async (item) => {
     router.push({
       path: '/layout/albumDetail'
     })
-  } else if (item.index == 2) { //删除歌曲
-    console.log(2);
+  }
+  if (item.index == 3) {  //查看专辑
+    downloadFile(songUrl.value)
   }
   showMore.value = false;
 };
@@ -225,7 +228,7 @@ const recoveryConfig = () => {
 
 const getSong = async () => {
   //获取歌曲信息
-  let res = await PlayListGetSong(id.value)
+  let res = await getSongInfo(id.value)
   songInfo.value = res.songInfo
   songUrl.value = res.songUrl
   lyric.value = res.lyric

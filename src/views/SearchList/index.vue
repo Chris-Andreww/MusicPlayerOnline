@@ -1,6 +1,6 @@
 <template>
   <div class="search_wrap">
-    <van-tabs v-model:active="active">
+    <van-tabs v-model:active="active" swipeable>
       <van-tab title="单曲">
         <singleSongs :type="1"></singleSongs>
       </van-tab>

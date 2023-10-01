@@ -14,8 +14,16 @@ export const playFn = async (id, songs) => {
     return
   }
   store.id = id
-  //用于歌曲切换而创建的列表
-  store.curPlayList = songs.map(val => {
-    return val.id
-  })
+  //如果id有值就代表该歌曲是普通歌曲，有专辑id，如果id为0则代表该歌曲没有专辑，属于播单歌曲
+  if (songs[0].al?.id) {
+    //用于歌曲切换而创建的列表
+    store.curPlayList = songs.map(val => {
+      return val.id
+    })
+  } else {
+    //用于播单切换
+    store.curPlayList = songs.map(val => {
+      return val.mainTrackId
+    })
+  }
 }

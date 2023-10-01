@@ -53,3 +53,9 @@ export const GetAnonimous = () => request({
   url: '/register/anonimous',
   method: "GET"
 })
+
+//获取获取用户播放记录
+export const GetPlayHistory = (uid, type) => request({
+  url: `/user/record?uid=${uid}&type=${type}`,
+  method: "GET"
+})

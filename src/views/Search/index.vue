@@ -4,14 +4,17 @@
       @update:model-value="inputFn" :show-action="showSuggest" @cancel="showSuggest = false" @search="search" />
     <div class="top">
       <!-- 搜索建议 -->
-      <div class="search_suggest" v-show="showSuggest">
-        <div class="sugitem" v-for="(obj, index) in SuggestVal" @click="clickItem(obj.keyword)" :key="index">
-          <span class="iconfont icon-sousuo"></span>
-          <div>{{ obj.keyword }}</div>
+      <div class="mask" v-show="showSuggest" @click.stop="closeSuggest">
+        <div class="search_suggest">
+          <div class="sugitem" v-for="(obj, index) in SuggestVal" @click="clickItem(obj.keyword)" :key="index">
+            <span class="iconfont icon-sousuo"></span>
+            <div>{{ obj.keyword }}</div>
+          </div>
         </div>
       </div>
       <!-- 搜索历史 -->
-      <div v-show="searchHistory.length && !value" style="display: flex;justify-content: space-between;align-items: center;">
+      <div v-show="searchHistory.length && !value"
+        style="display: flex;justify-content: space-between;align-items: center;">
         <p style="font-size: 18px;margin: 10px;">历史记录</p>
         <div class="iconfont icon-lajixiang" style="padding: 10px;" @click="delHis"></div>
       </div>
@@ -71,6 +74,10 @@ onMounted(async () => {
   const res = await hotSearchAPI();
   hotArr.value = res.data.data;
 });
+
+const closeSuggest = () => {
+  showSuggest.value = false
+}
 
 const inputFn = (inputVal) => {
   // 防抖策略
@@ -149,23 +156,32 @@ watch(() => store.searchVal, (newv) => {
 
 <style lang="scss" scoped>
 /* 搜索容器的样式 */
-
-.search_suggest {
+.mask {
   position: absolute;
-  background-color: white;
   width: 100%;
-  z-index: 30;
+  height: 100%;
 
-  .sugitem {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    padding: 15px;
-    border-bottom: 1px solid lightgray;
-  }
+  .search_suggest {
+    position: absolute;
+    background-color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    z-index: 20;
+    box-shadow: 0px 10px 15px 1px #C1C1C1;
+    padding-bottom: 10%;
 
-  span {
-    padding-right: 10px;
+    .sugitem {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      padding: 15px;
+      border-bottom: 1px solid lightgray;
+    }
+
+    span {
+      padding-right: 10px;
+    }
   }
 }
 

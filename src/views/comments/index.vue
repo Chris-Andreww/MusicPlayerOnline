@@ -15,7 +15,7 @@
         <div class="title">
           <p>{{ obj.user.nickname }}</p>
           <p>{{ formatDate(obj.time) }}</p>
-          <p class="iconfont icon-dianzan">{{ obj.likedCount }}</p>
+          <p class="iconfont icon-dianzan">&nbsp;{{ obj.likedCount }}</p>
         </div>
       </template>
       <template #label>
@@ -29,7 +29,7 @@
 
 <script setup>
 import { getComments } from "@/utils/getData";
-import { ref, watch } from "vue";
+import { ref, watch,onMounted } from "vue";
 import { formatDate } from '@/utils/formatTime'
 import { useRouter, useRoute } from "vue-router";
 
@@ -73,6 +73,13 @@ watch(() => route.query.id, () => {
   }
   id.value = route.query.id
   page.value = 1
+  onLoad()
+})
+onMounted(()=>{
+  if (route.query.id == undefined) {
+    return
+  }
+  id.value = route.query.id
   onLoad()
 })
 </script>

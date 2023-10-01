@@ -1,7 +1,7 @@
 <template>
   <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-    <van-cell v-for="obj in resultList" center :title="obj.nickname" :label="obj.signature.substr(0, 20) + '...'"
-      :key="obj.id" @click="detail">
+    <van-cell v-for="(obj, index) in resultList" center :title="obj.nickname" :label="obj.signature.substr(0, 20) + '...'"
+      :key="index" @click="toDetail(obj.userId)">
       <template #icon>
         <div class="singerAvatar">
           <img v-img-lazy="obj.avatarUrl" style="width: 100%;padding-right: 10px">
@@ -15,6 +15,7 @@
 import { getSongsData } from "@/utils/getData";
 import { defineProps, ref, watch } from "vue";
 import { usePlayId } from "@/store";
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   type: Number
@@ -25,6 +26,7 @@ const finished = ref(false) // 未加载全部 (如果设置为true, 底部就�
 const page = ref(1) // 当前搜索结果的页码
 const timer = ref(null)
 const store = usePlayId()
+const router = useRouter()
 
 // 触底事件
 const onLoad = async () => {
@@ -46,12 +48,16 @@ const onLoad = async () => {
   page.value++
 }
 
-const detail = () => {
-  console.log(1);
+const toDetail = (uid) => {
+  router.push({
+    path: '/layout/userdetail',
+    query: { uid }
+  })
 }
 
 watch(() => store.searchVal, async () => {
   page.value = 1
+  resultList.value = []
   const res = await getSongsData(store.searchVal, props.type, page.value)
   if (res.data.result?.userprofiles === undefined) {
     resultList.value = [];
